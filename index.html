@@ -1,0 +1,2035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KitabSwap Build Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fraunces:opsz,wght@9..144,650;9..144,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4F5F8; --surface:#FFFFFF; --surface-2:#EDEFF4; --ink:#15171C; --ink-soft:#505665; --line:#D8DCE4;
+  --gold:#D6970F; --gold-wash:#FCF1D7; --gold-ink:#6A4A00;
+  --red:#B01F2D; --red-wash:#FBE7E9; --green:#21704B; --green-wash:#DEF0E6; --blue:#2847B5; --blue-wash:#E5EAFA;
+  --code-bg:#171B27; --code-ink:#E8EBF4; --code-dim:#8790AD; --code-hi:#2A3352;
+  --nav-bg:#15171C; --nav-ink:#E9EBF1; --nav-soft:#9BA2B4; --nav-line:#2C313D;
+  --lr:#2847B5; --le:#D6970F; --ln:#21704B; --lm:#7A3FB0; --lr-w:#E5EAFA; --le-w:#FCF1D7; --ln-w:#DEF0E6; --lm-w:#F0E6F8;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#10131A; --surface:#181C26; --surface-2:#212634; --ink:#E8EAF1; --ink-soft:#A3AABB; --line:#30364A;
+    --gold:#F0B638; --gold-wash:#352A12; --gold-ink:#F6D58A;
+    --red:#F07A84; --red-wash:#3A1D22; --green:#63C997; --green-wash:#163024; --blue:#8DA5FF; --blue-wash:#1E2848;
+    --code-bg:#0B0E16; --code-hi:#232B47; --nav-bg:#0B0D13; --nav-line:#242938;
+    --lr:#8DA5FF; --le:#F0B638; --ln:#63C997; --lm:#C9A2F0; --lr-w:#1E2848; --le-w:#352A12; --ln-w:#163024; --lm-w:#2C1F3B;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#10131A; --surface:#181C26; --surface-2:#212634; --ink:#E8EAF1; --ink-soft:#A3AABB; --line:#30364A;
+  --gold:#F0B638; --gold-wash:#352A12; --gold-ink:#F6D58A;
+  --red:#F07A84; --red-wash:#3A1D22; --green:#63C997; --green-wash:#163024; --blue:#8DA5FF; --blue-wash:#1E2848;
+  --code-bg:#0B0E16; --code-hi:#232B47; --nav-bg:#0B0D13; --nav-line:#242938;
+  --lr:#8DA5FF; --le:#F0B638; --ln:#63C997; --lm:#C9A2F0; --lr-w:#1E2848; --le-w:#352A12; --ln-w:#163024; --lm-w:#2C1F3B;
+  color-scheme:dark;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;line-height:1.55;font-size:15.5px;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Fraunces',Georgia,'Times New Roman',serif;line-height:1.2;margin:0;font-weight:650}
+code,pre,kbd,textarea.ed,.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+p{margin:0 0 .8em}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+code{background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:0 5px;font-size:.86em}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--nav-bg);color:var(--nav-ink);padding:12px 20px;border-bottom:4px solid #E0A11C}
+.brand{display:flex;flex-direction:column;line-height:1.2;margin-right:auto}
+.brand b{font-family:'Fraunces',Georgia,serif;font-size:1.25rem;font-weight:800}
+.brand span{color:var(--nav-soft);font-size:.8rem}
+.flag{display:inline-block;height:4px;width:46px;background:linear-gradient(90deg,#15171C 0 33%,#C8102E 33% 66%,#E0A11C 66%);border-radius:2px;outline:1px solid #3A4050;margin-top:6px}
+.pill{border:1px solid var(--nav-line);border-radius:999px;padding:4px 12px;font-size:.8rem;color:var(--nav-ink);background:none}
+.pill .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#6B7180;margin-right:7px;vertical-align:1px}
+.pill.on .dot{background:#63C997}
+.top button.pill:hover{background:#242833}
+
+/* stepper */
+.stepper{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:10px 20px;background:var(--surface);border-bottom:1px solid var(--line)}
+.stepper .grp{font-size:.74rem;font-weight:700;color:var(--ink-soft);margin:0 2px 0 10px}
+.stepper .grp:first-child{margin-left:0}
+.stepper button{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px 4px 5px;font-size:.84rem}
+.stepper button .num{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);font-weight:700;font-size:.76rem}
+.stepper button.done .num{background:var(--green);color:#fff}
+.stepper button[aria-current="step"]{border-color:var(--ink);background:var(--ink);color:var(--surface)}
+.stepper button[aria-current="step"] .num{background:#E0A11C;color:#15171C}
+.stepper button .lead{font-size:.7rem;background:var(--blue-wash);color:var(--blue);border-radius:999px;padding:0 6px;font-weight:700}
+
+/* layout */
+.layout{display:grid;grid-template-columns:minmax(340px,450px) minmax(0,1fr);gap:18px;padding:18px 20px 40px;align-items:start}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:14px}
+.card h3{font-size:1.02rem;margin-bottom:8px}
+.guide h2{font-size:1.45rem;margin:2px 0 6px;font-weight:800;letter-spacing:-.01em}
+.guide .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.82rem;color:var(--ink-soft);margin-bottom:8px}
+.lay{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:1px 9px 1px 3px;font-size:.78rem;font-weight:700}
+.lay i{font-style:normal;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:.7rem}
+.lay.R{background:var(--lr-w);color:var(--lr)} .lay.R i{background:var(--lr)}
+.lay.E{background:var(--le-w);color:var(--gold-ink)} .lay.E i{background:var(--le);color:#15171C}
+.lay.N{background:var(--ln-w);color:var(--ln)} .lay.N i{background:var(--ln)}
+.lay.M{background:var(--lm-w);color:var(--lm)} .lay.M i{background:var(--lm)}
+.intro{color:var(--ink-soft)}
+.guide ul,.guide ol{padding-left:1.25em;margin:0 0 .8em}
+.guide li{margin-bottom:.35em}
+.guide ol li::marker{font-weight:700;color:var(--gold)}
+.mern .why p:last-child,.mern .why ul:last-child,.mern .why ol:last-child{margin-bottom:0}
+.mapwrap{background:var(--surface-2);border-radius:12px;padding:8px;margin:10px 0}
+.mapwrap svg{display:block;width:100%;height:auto}
+.m-panel{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.m-panel.on{stroke:var(--ink-soft);stroke-width:2}
+.m-node rect{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5;transition:fill .2s,stroke .2s}
+.m-node.R rect{stroke:var(--lr)} .m-node.E rect{stroke:var(--le)} .m-node.M rect{stroke:var(--lm)}
+.m-node.dim{opacity:.38}
+.m-node.active rect{fill:var(--gold-wash);stroke:var(--gold);stroke-width:3.5}
+.m-t{fill:var(--ink);font-family:'Atkinson Hyperlegible',sans-serif;font-size:12.5px}
+.m-t.sm{font-size:10.5px}
+.m-t.b{font-weight:700}
+.m-t.s{fill:var(--ink-soft);font-size:11px}
+.m-t.h{font-family:'Fraunces',serif;font-weight:800;font-size:12.5px}
+.m-line{stroke:var(--ink-soft);stroke-width:1.6;fill:none}
+.m-arrow{fill:var(--ink-soft)}
+.narr{background:var(--gold-wash);border-radius:4px 12px 12px 12px;padding:10px 14px;min-height:64px;font-size:.93rem}
+.narr .stp{display:block;font-size:.74rem;font-weight:700;color:var(--gold-ink);margin-bottom:2px}
+.predict{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.predict b{display:block;margin-bottom:4px}
+.reveal{background:var(--green-wash);border-radius:10px;padding:10px 12px;margin-top:8px;font-size:.93rem}
+.notes{font-size:.82rem;color:var(--ink-soft)}
+
+/* buttons */
+.btn{border:1.5px solid var(--line);background:var(--surface-2);border-radius:9px;padding:6px 13px;font-size:.86rem;font-weight:700;color:var(--ink)}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn.gold{background:#E0A11C;border-color:#E0A11C;color:#15171C}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sub{color:var(--ink-soft);font-size:.88rem}
+
+/* checks */
+.checks{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+.checks li{display:grid;grid-template-columns:24px 1fr;gap:8px;align-items:start;font-size:.9rem;padding:7px 10px;border-radius:9px;background:var(--surface-2)}
+.checks .mk{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--line);font-size:.75rem;font-weight:700;color:var(--ink-soft);background:var(--surface)}
+.checks li.ok{background:var(--green-wash)} .checks li.ok .mk{background:var(--green);border-color:var(--green);color:#fff}
+.checks li.no{background:var(--red-wash)} .checks li.no .mk{background:var(--red);border-color:var(--red);color:#fff}
+.checks li.run .mk{border-color:var(--gold);color:var(--gold)}
+.checks .hint{display:block;font-size:.84rem;color:var(--ink-soft);margin-top:2px}
+.complete{background:var(--green-wash);border-radius:10px;padding:10px 12px;margin-top:10px;font-weight:700}
+
+/* hint */
+.hintbox{background:var(--blue-wash);border-radius:4px 12px 12px 12px;padding:10px 14px;margin-top:10px;font-size:.93rem;white-space:pre-wrap}
+.hintbox:empty{display:none}
+input[type=text],select,textarea{font:inherit;color:var(--ink);background:var(--surface-2);border:1.5px solid var(--line);border-radius:8px;padding:6px 10px;min-width:0}
+.toggle{display:flex;gap:9px;align-items:flex-start;font-size:.9rem;cursor:pointer;margin:4px 0}
+.toggle input{width:18px;height:18px;accent-color:var(--blue);margin-top:2px;flex:none}
+
+/* class board */
+.board{display:grid;gap:5px;margin-top:8px;max-height:320px;overflow:auto}
+.who{display:grid;grid-template-columns:26px 1fr auto;gap:8px;align-items:center;font-size:.86rem;padding:5px 8px;border-radius:8px;background:var(--surface-2)}
+.who img{width:26px;height:26px;border-radius:50%}
+.who.stuck{background:var(--red-wash)}
+.who .st{font-size:.76rem;color:var(--ink-soft)}
+.tag{font-size:.72rem;font-weight:700;border-radius:999px;padding:1px 8px;background:var(--surface);border:1px solid var(--line)}
+.tag.red{background:var(--red);color:#fff;border-color:var(--red)}
+.banner{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--blue-wash);border:1.5px solid var(--blue);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:.92rem}
+.banner[hidden]{display:none}
+
+/* workspace */
+.work{min-width:0}
+.edhead{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.tabs{display:inline-flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.tabs button{border:0;background:none;padding:6px 12px;font-size:.82rem;font-family:'JetBrains Mono',monospace}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--surface)}
+.tabs button .ch{display:inline-block;width:7px;height:7px;border-radius:50%;background:#E0A11C;margin-left:6px;vertical-align:1px}
+.edhead .spacer{flex:1}
+.edbox{display:grid;grid-template-columns:44px 1fr;background:var(--code-bg);border-radius:12px;overflow:hidden;height:380px;border:1px solid var(--code-bg)}
+.gutter{color:var(--code-dim);font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.6;padding:12px 8px 12px 0;text-align:right;overflow:hidden;white-space:pre;user-select:none}
+textarea.ed{width:100%;height:100%;resize:none;border:0;border-radius:0;background:var(--code-bg);color:var(--code-ink);font-size:.8rem;line-height:1.6;padding:12px 14px 12px 10px;white-space:pre;overflow:auto;tab-size:2;outline:none}
+textarea.ed:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--gold)}
+.lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:12px}
+.browser{border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface);display:flex;flex-direction:column;min-height:360px}
+.browser .bar{background:var(--surface-2);padding:6px 10px;font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--ink-soft);display:flex;gap:6px;align-items:center}
+.browser .bar i{width:9px;height:9px;border-radius:50%;background:var(--line);display:inline-block}
+.browser .bar .stat{margin-left:auto;font-family:'Atkinson Hyperlegible',sans-serif}
+.browser iframe{border:0;width:100%;flex:1;min-height:330px;background:#F6F4EE}
+.fatal{padding:14px;background:var(--red-wash);color:var(--ink);font-size:.9rem}
+.fatal[hidden]{display:none}
+.panel{border:1.5px solid var(--line);border-radius:12px;background:var(--surface);display:flex;flex-direction:column;min-height:360px;min-width:0}
+.ptabs{display:flex;border-bottom:1px solid var(--line)}
+.ptabs button{border:0;background:none;padding:8px 12px;font-size:.84rem;font-weight:700;color:var(--ink-soft);border-bottom:3px solid transparent}
+.ptabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:#E0A11C}
+.ptabs .cnt{font-weight:400;font-size:.76rem;margin-left:4px}
+.pbody{flex:1;overflow:auto;max-height:420px}
+.log{font-family:'JetBrains Mono',monospace;font-size:.76rem;padding:8px 10px;display:grid;gap:3px}
+.log .ln{display:grid;grid-template-columns:62px 1fr;gap:8px;white-space:pre-wrap;word-break:break-word;padding:2px 0;border-bottom:1px dashed var(--line)}
+.log .src{font-size:.68rem;font-weight:700;border-radius:5px;padding:1px 5px;align-self:start;text-align:center}
+.log .src.server{background:var(--ln-w);color:var(--ln)} .log .src.browser{background:var(--lr-w);color:var(--lr)} .log .src.studio{background:var(--surface-2);color:var(--ink-soft)}
+.log .warn{color:var(--gold-ink)} .log .error{color:var(--red)}
+.empty{color:var(--ink-soft);font-size:.86rem;padding:12px}
+.net{display:grid;gap:4px;padding:8px 10px}
+.net details{border:1px solid var(--line);border-radius:8px;background:var(--surface-2)}
+.net summary{display:grid;grid-template-columns:52px 1fr auto auto;gap:8px;align-items:center;padding:5px 8px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.76rem}
+.net summary small{font-family:'Atkinson Hyperlegible',sans-serif;color:var(--ink-soft)}
+.net pre{margin:0;padding:6px 10px 8px;font-size:.74rem;white-space:pre-wrap;word-break:break-word;border-top:1px solid var(--line)}
+.code{display:inline-block;border-radius:6px;padding:0 7px;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:.74rem}
+.c2{background:var(--green-wash);color:var(--green)} .c4{background:var(--gold-wash);color:var(--gold-ink)} .c5,.c0{background:var(--red-wash);color:var(--red)}
+.tester{padding:10px;display:grid;gap:8px}
+.tester .req{display:grid;grid-template-columns:auto 1fr auto;gap:6px}
+.tester textarea{font-family:'JetBrains Mono',monospace;font-size:.78rem;min-height:70px;resize:vertical}
+.tester .resp{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:.76rem;white-space:pre-wrap;word-break:break-word;min-height:90px;max-height:230px;overflow:auto}
+.presets{display:flex;gap:5px;flex-wrap:wrap}
+.presets button{border:1px solid var(--line);background:var(--surface-2);border-radius:999px;padding:2px 9px;font-size:.74rem;font-family:'JetBrains Mono',monospace}
+.foot{padding:0 20px 30px;color:var(--ink-soft);font-size:.8rem}
+
+@media (max-width: 1150px){ .layout{grid-template-columns:1fr} }
+@media (max-width: 760px){
+  .lower{grid-template-columns:1fr}
+  .top,.stepper,.layout{padding-left:12px;padding-right:12px}
+  .edbox{height:320px}
+  .tester .req{grid-template-columns:1fr}
+}
+@media print{ .work,.stepper{display:none} .layout{display:block} }
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="text/plain" id="runner-src">
+(function () {
+  'use strict';
+  var ID = window.__STUDIO_ID;
+  var post = function (t, a) { parent.postMessage(Object.assign({ __studio: ID, t: t }, a || {}), '*'); };
+  var fmt = function (x) {
+    if (typeof x === 'string') return x;
+    if (x === undefined) return 'undefined';
+    if (x instanceof Error) return x.name + ': ' + x.message;
+    try {
+      return JSON.stringify(x, function (k, v) {
+        if (k === '_owner' || k === '_store' || k === '_self' || k === '_source') return undefined;
+        if (typeof v === 'function') return '[Function ' + (v.name || 'anonymous') + ']';
+        if (typeof v === 'symbol') return v.toString();
+        return v;
+      }, 2);
+    } catch (e) { return String(x); }
+  };
+  function mkConsole(src) {
+    var out = function (lvl) { return function () { var a = [].slice.call(arguments); post('log', { src: src, lvl: lvl, text: a.map(fmt).join(' ') }); }; };
+    return { log: out('log'), info: out('log'), debug: out('log'), warn: out('warn'), error: out('error'), table: out('log') };
+  }
+  var sc = mkConsole('server'), bc = mkConsole('browser');
+  console.log = bc.log; console.info = bc.log; console.warn = bc.warn;
+  console.error = function () {
+    var a = [].slice.call(arguments), m = String(a[0]), i = 1;
+    m = m.replace(/%s/g, function () { return i < a.length ? String(a[i++]) : ''; });
+    var rest = a.slice(i).filter(function (x) { return !(typeof x === 'string' && /\n\s+at /.test(x)); });
+    bc.error.apply(null, [m.replace(/\n\s+at [\s\S]*/, '')].concat(rest));
+  };
+  var current = '';
+  var srcOf = function (f) { return /App/.test(f) ? 'browser' : 'server'; };
+  window.addEventListener('error', function (e) {
+    post('log', { src: current ? srcOf(current) : 'browser', lvl: 'error', text: (current ? current + ': ' : '') + (e.message || 'Error') });
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    var r = e.reason; post('log', { src: 'browser', lvl: 'error', text: 'Uncaught (in promise) ' + (r && r.name ? r.name + ': ' + r.message : String(r)) });
+  });
+
+  var STATUS = { 200: 'OK', 201: 'Created', 204: 'No Content', 400: 'Bad Request', 401: 'Unauthorized', 403: 'Forbidden', 404: 'Not Found', 409: 'Conflict', 500: 'Internal Server Error' };
+
+  /* ================= simulated MongoDB + Mongoose ================= */
+  var DB = {}, connected = false, testMode = false, warnedConn = false;
+  var oid = function () { var t = Math.floor(Date.now() / 1000).toString(16).padStart(8, '0'), r = ''; for (var i = 0; i < 16; i++) r += (Math.random() * 16 | 0).toString(16); return t + r; };
+  var clone = function (o) { return o === undefined ? undefined : JSON.parse(JSON.stringify(o)); };
+  var T0 = '2026-11-02T09:00:00.000Z';
+  var SEED = {
+    books: [
+      { _id: '6710f3a2c9e77b5d1a2b3c01', title: 'Clean Code', price: 250, category: 'Programming', condition: 'good', seller: 'Omar', createdAt: T0, updatedAt: T0, __v: 0 },
+      { _id: '6710f3a2c9e77b5d1a2b3c02', title: 'Database Systems', price: 300, category: 'Databases', condition: 'new', seller: 'Mona', createdAt: T0, updatedAt: T0, __v: 0 },
+      { _id: '6710f3a2c9e77b5d1a2b3c03', title: 'SQL Basics', price: 180, category: 'Databases', condition: 'fair', seller: 'Youssef', createdAt: T0, updatedAt: T0, __v: 0 },
+      { _id: '6710f3a2c9e77b5d1a2b3c04', title: 'Marketing 101', price: 150, category: 'Business', condition: 'good', seller: 'Salma', createdAt: T0, updatedAt: T0, __v: 0 }
+    ]
+  };
+  function Schema(def, opts) { if (!(this instanceof Schema)) return new Schema(def, opts); this.def = def || {}; this.opts = opts || {}; }
+  Schema.Types = { ObjectId: 'ObjectId', Mixed: 'Mixed', String: String, Number: Number };
+  function norm(d) {
+    if (d === String || d === Number || d === Boolean || d === Date) return { type: d };
+    if (Array.isArray(d)) return { type: Array, of: d[0] };
+    if (d && typeof d === 'object' && d.type) return Array.isArray(d.type) ? Object.assign({}, d, { type: Array, of: d.type[0] }) : d;
+    return { type: 'Mixed' };
+  }
+  function castErr(p, v, t) { return { kind: t, message: 'Cast to ' + t + ' failed for value "' + (typeof v === 'object' ? JSON.stringify(v) : String(v)) + '" (type ' + typeof v + ') at path "' + p + '"' }; }
+  function castVal(p, v, d, errs) {
+    var t = d.type;
+    if (v === undefined || v === null) return v;
+    if (t === String) { if (typeof v === 'object') { errs[p] = castErr(p, v, 'string'); return; } return String(v); }
+    if (t === Number) {
+      if (v === '') return null;
+      if (typeof v === 'object' || typeof v === 'boolean') { errs[p] = castErr(p, v, 'Number'); return; }
+      var n = Number(v); if (Number.isNaN(n)) { errs[p] = castErr(p, v, 'Number'); return; } return n;
+    }
+    if (t === Boolean) { if (v === 'true' || v === 1 || v === '1') return true; if (v === 'false' || v === 0 || v === '0') return false; if (typeof v !== 'boolean') { errs[p] = castErr(p, v, 'Boolean'); return; } return v; }
+    if (t === Date) { var dt = new Date(v); if (isNaN(dt)) { errs[p] = castErr(p, v, 'date'); return; } return dt.toISOString(); }
+    if (t === Array) { var arr = Array.isArray(v) ? v : [v]; return arr.map(function (x) { return d.of === String ? String(x) : d.of === Number ? Number(x) : x; }); }
+    return v;
+  }
+  function buildDoc(schema, data) {
+    data = data && typeof data === 'object' ? data : {};
+    var errs = {}, out = {};
+    Object.keys(schema.def).forEach(function (p) {
+      var d = norm(schema.def[p]), v = data[p];
+      if (v === undefined && d.default !== undefined) v = typeof d.default === 'function' ? d.default() : d.default;
+      if (d.type === Array && v === undefined) v = [];
+      v = castVal(p, v, d, errs);
+      if (errs[p]) return;
+      if (typeof v === 'string') { if (d.trim) v = v.trim(); if (d.lowercase) v = v.toLowerCase(); if (d.uppercase) v = v.toUpperCase(); }
+      var req = Array.isArray(d.required) ? d.required[0] : d.required, reqMsg = Array.isArray(d.required) ? d.required[1] : null;
+      if (typeof req === 'function') req = req.call(data);
+      if (req && (v === undefined || v === null || v === '')) { errs[p] = { kind: 'required', message: reqMsg || 'Path `' + p + '` is required.' }; return; }
+      if (v !== undefined && v !== null) {
+        var mn = Array.isArray(d.min) ? d.min : [d.min], mx = Array.isArray(d.max) ? d.max : [d.max];
+        if (d.min !== undefined && typeof v === 'number' && v < mn[0]) errs[p] = { kind: 'min', message: mn[1] || 'Path `' + p + '` (' + v + ') is less than minimum allowed value (' + mn[0] + ').' };
+        if (d.max !== undefined && typeof v === 'number' && v > mx[0]) errs[p] = { kind: 'max', message: mx[1] || 'Path `' + p + '` (' + v + ') is more than maximum allowed value (' + mx[0] + ').' };
+        var en = d.enum ? (Array.isArray(d.enum) ? d.enum : d.enum.values) : null;
+        if (en && en.indexOf(v) < 0) errs[p] = { kind: 'enum', message: (d.enum.message) || '`' + v + '` is not a valid enum value for path `' + p + '`.' };
+        if (typeof v === 'string' && d.minlength !== undefined && v.length < (d.minlength[0] || d.minlength)) errs[p] = { kind: 'minlength', message: 'Path `' + p + '` (`' + v + '`) is shorter than the minimum allowed length (' + (d.minlength[0] || d.minlength) + ').' };
+        if (typeof v === 'string' && d.maxlength !== undefined && v.length > (d.maxlength[0] || d.maxlength)) errs[p] = { kind: 'maxlength', message: 'Path `' + p + '` (`' + v + '`) is longer than the maximum allowed length (' + (d.maxlength[0] || d.maxlength) + ').' };
+      }
+      if (v !== undefined) out[p] = v;
+    });
+    return { out: out, errs: errs };
+  }
+  function validationError(name, errs) {
+    var e = new Error(name + ' validation failed: ' + Object.keys(errs).map(function (p) { return p + ': ' + errs[p].message; }).join(', '));
+    e.name = 'ValidationError'; e.errors = {};
+    Object.keys(errs).forEach(function (p) { e.errors[p] = { path: p, kind: errs[p].kind, message: errs[p].message, name: errs[p].kind === 'required' || errs[p].kind === 'min' || errs[p].kind === 'enum' ? 'ValidatorError' : 'CastError' }; });
+    return e;
+  }
+  function matchVal(v, cond) {
+    if (cond instanceof RegExp) return typeof v === 'string' && cond.test(v);
+    if (cond && typeof cond === 'object' && !Array.isArray(cond)) {
+      return Object.keys(cond).every(function (op) {
+        var x = cond[op];
+        switch (op) {
+          case '$eq': return v === x; case '$ne': return v !== x;
+          case '$gt': return v > x; case '$gte': return v >= x; case '$lt': return v < x; case '$lte': return v <= x;
+          case '$in': return x.indexOf(v) >= 0; case '$nin': return x.indexOf(v) < 0;
+          case '$regex': return new RegExp(x, cond.$options || '').test(v); case '$options': return true;
+          case '$exists': return (v !== undefined) === !!x;
+          default: throw new Error('The studio does not simulate the operator ' + op);
+        }
+      });
+    }
+    if (Array.isArray(v)) return v.indexOf(cond) >= 0;
+    return v === cond || (typeof v === 'number' && typeof cond === 'string' && String(v) === cond);
+  }
+  function matches(doc, filter) {
+    return Object.keys(filter || {}).every(function (k) {
+      if (k === '$or') return filter.$or.some(function (f) { return matches(doc, f); });
+      if (k === '$and') return filter.$and.every(function (f) { return matches(doc, f); });
+      return matchVal(doc[k], filter[k]);
+    });
+  }
+  function whenReady(coll, op) {
+    if (connected || testMode) return Promise.resolve();
+    return new Promise(function (res, rej) {
+      var t0 = Date.now(), iv = setInterval(function () {
+        if (!warnedConn && !connected && Date.now() - t0 > 1000) { warnedConn = true; sc.warn('[studio] Mongoose is still not connected, so `' + coll + '.' + op + '()` is waiting for mongoose.connect()…'); }
+        if (connected) { clearInterval(iv); res(); }
+        else if (Date.now() - t0 > 3000) { clearInterval(iv); rej(new Error('Operation `' + coll + '.' + op + '()` buffering timed out after 10000ms')); }
+      }, 100);
+    });
+  }
+  function Query(model, op, fn) { this.model = model; this.op = op; this.fn = fn; this._sort = null; this._limit = 0; this._skip = 0; }
+  Query.prototype.sort = function (s) { this._sort = s; return this; };
+  Query.prototype.limit = function (n) { this._limit = n; return this; };
+  Query.prototype.skip = function (n) { this._skip = n; return this; };
+  Query.prototype.select = function () { return this; };
+  Query.prototype.lean = function () { return this; };
+  Query.prototype.populate = function () { return this; };
+  Query.prototype.exec = function () { return this.then(); };
+  Query.prototype.catch = function (f) { return this.then(null, f); };
+  Query.prototype.then = function (a, b) {
+    var q = this;
+    return whenReady(q.model.collection.name, q.op).then(function () {
+      var r = q.fn();
+      if (Array.isArray(r)) {
+        if (q._sort) {
+          var spec = typeof q._sort === 'string' ? q._sort.split(/\s+/).reduce(function (o, k) { if (k) o[k.replace(/^-/, '')] = k[0] === '-' ? -1 : 1; return o; }, {}) : q._sort;
+          var ks = Object.keys(spec);
+          r.sort(function (x, y) { for (var i = 0; i < ks.length; i++) { var k = ks[i], d = spec[k] === -1 || spec[k] === 'desc' ? -1 : 1; if (x[k] < y[k]) return -d; if (x[k] > y[k]) return d; } return 0; });
+        }
+        if (q._skip) r = r.slice(q._skip);
+        if (q._limit) r = r.slice(0, q._limit);
+      }
+      return r;
+    }).then(a, b);
+  };
+  var models = {};
+  function model(name, schema) {
+    if (models[name]) { var oe = new Error('Cannot overwrite `' + name + '` model once compiled.'); oe.name = 'OverwriteModelError'; throw oe; }
+    if (!(schema instanceof Schema)) schema = new Schema(schema || {});
+    var coll = name.toLowerCase() + (/s$/i.test(name) ? '' : 's');
+    if (!DB[coll]) DB[coll] = clone(SEED[coll] || []);
+    var stamp = function (d, isNew) { if (schema.opts.timestamps) { var n = new Date().toISOString(); if (isNew) d.createdAt = n; d.updatedAt = n; } };
+    var checkId = function (id) {
+      if (!/^[0-9a-f]{24}$/i.test(String(id))) { var e = new Error('Cast to ObjectId failed for value "' + id + '" (type ' + typeof id + ') at path "_id" for model "' + name + '"'); e.name = 'CastError'; throw e; }
+    };
+    function insert(data) {
+      var b = buildDoc(schema, data);
+      if (Object.keys(b.errs).length) throw validationError(name, b.errs);
+      var d = Object.assign({ _id: oid() }, b.out); stamp(d, true); d.__v = 0;
+      DB[coll].push(d); return clone(d);
+    }
+    function M(data) { var b = buildDoc(schema, data); Object.assign(this, { _id: oid() }, b.out); Object.defineProperty(this, '_raw', { value: data, enumerable: false }); }
+    M.prototype.save = function () {
+      var self = this;
+      return whenReady(coll, 'insertOne').then(function () {
+        var existing = DB[coll].findIndex(function (x) { return x._id === self._id; });
+        var plain = JSON.parse(JSON.stringify(self));
+        var b = buildDoc(schema, plain);
+        if (Object.keys(b.errs).length) throw validationError(name, b.errs);
+        var d = Object.assign({ _id: self._id }, b.out);
+        if (existing >= 0) { stamp(d, false); d.createdAt = DB[coll][existing].createdAt; d.__v = DB[coll][existing].__v; DB[coll][existing] = d; }
+        else { stamp(d, true); d.__v = 0; DB[coll].push(d); }
+        Object.assign(self, clone(d)); return self;
+      });
+    };
+    M.prototype.toJSON = function () { var o = {}; for (var k in this) if (Object.prototype.hasOwnProperty.call(this, k)) o[k] = this[k]; return o; };
+    M.modelName = name;
+    M.collection = { name: coll };
+    M.schema = schema;
+    M.find = function (filter) { return new Query(M, 'find', function () { return clone(DB[coll].filter(function (d) { return matches(d, filter); })); }); };
+    M.findOne = function (filter) { return new Query(M, 'findOne', function () { var d = DB[coll].find(function (x) { return matches(x, filter); }); return d ? clone(d) : null; }); };
+    M.findById = function (id) { return new Query(M, 'findOne', function () { checkId(id); var d = DB[coll].find(function (x) { return x._id === String(id); }); return d ? clone(d) : null; }); };
+    M.countDocuments = function (filter) { return new Query(M, 'countDocuments', function () { return DB[coll].filter(function (d) { return matches(d, filter); }).length; }); };
+    M.create = function (data) {
+      return whenReady(coll, 'insertOne').then(function () { return Array.isArray(data) ? data.map(insert) : insert(data); });
+    };
+    M.insertMany = function (arr) { return M.create(arr || []); };
+    M.findByIdAndDelete = function (id) { return new Query(M, 'findOneAndDelete', function () { checkId(id); var i = DB[coll].findIndex(function (x) { return x._id === String(id); }); return i < 0 ? null : clone(DB[coll].splice(i, 1)[0]); }); };
+    M.findByIdAndRemove = M.findByIdAndDelete;
+    M.deleteOne = function (filter) { return new Query(M, 'deleteOne', function () { var i = DB[coll].findIndex(function (x) { return matches(x, filter); }); if (i >= 0) DB[coll].splice(i, 1); return { acknowledged: true, deletedCount: i >= 0 ? 1 : 0 }; }); };
+    M.deleteMany = function (filter) { return new Query(M, 'deleteMany', function () { var before = DB[coll].length; DB[coll] = DB[coll].filter(function (x) { return !matches(x, filter); }); return { acknowledged: true, deletedCount: before - DB[coll].length }; }); };
+    M.findByIdAndUpdate = function (id, update, opts) {
+      opts = opts || {};
+      return new Query(M, 'findOneAndUpdate', function () {
+        checkId(id);
+        var i = DB[coll].findIndex(function (x) { return x._id === String(id); });
+        if (i < 0) return null;
+        var old = DB[coll][i], set = update && update.$set ? update.$set : update || {};
+        var merged = Object.assign({}, old, set), b = buildDoc(schema, merged);
+        if (opts.runValidators && Object.keys(b.errs).length) throw validationError(name, b.errs);
+        var d = Object.assign({ _id: old._id }, b.out, { createdAt: old.createdAt, __v: old.__v }); stamp(d, false);
+        DB[coll][i] = d; return clone(opts.new ? d : old);
+      });
+    };
+    models[name] = M;
+    return M;
+  }
+  var mongoose = {
+    Schema: Schema, model: model, models: models,
+    connect: function (uri) {
+      if (typeof uri !== 'string' || !uri) return Promise.reject(new Error('The `uri` parameter to `openUri()` must be a string, got "' + typeof uri + '". Make sure the first parameter to `mongoose.connect()` is a string.'));
+      return new Promise(function (res) { setTimeout(function () { connected = true; res(mongoose); }, 250); });
+    },
+    connection: { on: function () {}, once: function () {} },
+    set: function () { return mongoose; },
+    Types: { ObjectId: { isValid: function (s) { return /^[0-9a-f]{24}$/i.test(String(s)); } } },
+    isValidObjectId: function (s) { return /^[0-9a-f]{24}$/i.test(String(s)); }
+  };
+
+  /* ================= simulated Express 5 ================= */
+  function express() {
+    var stack = [];
+    var app = function () {};
+    var add = function (method) {
+      return function (path) {
+        var fns = [].slice.call(arguments, 1);
+        if (typeof path === 'function' || Array.isArray(path)) { fns.unshift(path); path = null; }
+        [].concat.apply([], fns).forEach(function (fn) {
+          if (typeof fn !== 'function') throw new TypeError('app.' + (method ? method.toLowerCase() : 'use') + '() requires a callback function but got a ' + typeof fn);
+          stack.push({ method: method, path: path, fn: fn });
+        });
+        return app;
+      };
+    };
+    app.use = add(null); app.get = add('GET'); app.post = add('POST'); app.put = add('PUT'); app.patch = add('PATCH'); app.delete = add('DELETE'); app.all = add('ALL');
+    app.set = function () { return app; };
+    app.listen = function (port, cb) {
+      if (typeof port === 'function') { cb = port; port = 3000; }
+      __rt.listening = port || 3000; __rt.app = app;
+      if (typeof cb === 'function') setTimeout(function () { try { cb(); } catch (e) { sc.error(e.name + ': ' + e.message); } }, 0);
+      return { close: function () {} };
+    };
+    app._stack = stack;
+    return app;
+  }
+  express.json = function () {
+    return function jsonParser(req, res, next) {
+      if (req._raw != null && /json/i.test(req.headers['content-type'] || '')) {
+        try { req.body = req._raw === '' ? {} : JSON.parse(req._raw); }
+        catch (e) { sc.error('SyntaxError: ' + e.message); return res.status(400).send('Bad Request'); }
+      }
+      next();
+    };
+  };
+  express.urlencoded = function () { return function (req, res, next) { next(); }; };
+  express.static = function () { return function (req, res, next) { next(); }; };
+  express.Router = function () { throw new Error('express.Router is not simulated in the studio. Put your routes directly on app.'); };
+  function matchPath(pattern, path, prefix) {
+    if (pattern === '*' || pattern === '/*splat') return { params: {} };
+    var keys = [];
+    var src = pattern.replace(/\/+$/, '').replace(/[.+*?^${}()|[\]\\]/g, '\\$&').replace(/:(\w+)/g, function (_, k) { keys.push(k); return '([^/]+)'; });
+    var re = new RegExp('^' + src + (prefix ? '(?=/|$)' : '/?$'));
+    var m = path.match(re); if (!m) return null;
+    var params = {}; keys.forEach(function (k, i) { params[k] = decodeURIComponent(m[i + 1]); });
+    return { params: params };
+  }
+  function dispatch(method, url, headers, raw) {
+    return new Promise(function (resolve) {
+      if (!__rt.listening || !__rt.app) return resolve({ status: 0, error: 'Connection refused: nothing is listening on port 3000. Did server.js call app.listen()?' });
+      var u = new URL(url, 'http://localhost:3000');
+      var hs = {}; Object.keys(headers || {}).forEach(function (k) { hs[k.toLowerCase()] = headers[k]; });
+      var query = {}; u.searchParams.forEach(function (v, k) { query[k] = v; });
+      var req = { method: method, url: u.pathname + u.search, originalUrl: u.pathname + u.search, path: u.pathname, query: query, params: {}, headers: hs, body: undefined, _raw: raw,
+        get: function (h) { return hs[String(h).toLowerCase()]; } };
+      var done = false, invoked = false, waiter = null;
+      var finish = function (status, body, type) {
+        if (done) { sc.error('Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client'); return; }
+        done = true; res.headersSent = true; if (waiter) clearTimeout(waiter);
+        resolve({ status: status, body: body, type: type });
+      };
+      var res = {
+        statusCode: 200, headersSent: false,
+        status: function (c) { this.statusCode = c; return this; },
+        set: function () { return this; }, header: function () { return this; }, type: function () { return this; },
+        json: function (o) { finish(this.statusCode, JSON.stringify(o === undefined ? null : o), 'application/json'); return this; },
+        send: function (b) {
+          if (b !== null && typeof b === 'object') return this.json(b);
+          finish(this.statusCode, b == null ? '' : String(b), 'text/html'); return this;
+        },
+        sendStatus: function (c) { this.statusCode = c; finish(c, STATUS[c] || String(c), 'text/plain'); return this; },
+        end: function (b) { finish(this.statusCode, b == null ? '' : String(b), 'text/plain'); return this; }
+      };
+      var stack = __rt.app._stack;
+      function run(i, err) {
+        if (done) return;
+        if (i >= stack.length) {
+          if (err) { sc.error((err.name || 'Error') + ': ' + err.message); return finish(err.status || err.statusCode || 500, 'Internal Server Error', 'text/html'); }
+          if (invoked) {
+            waiter = setTimeout(function () { if (!done) { done = true; sc.warn('[studio] ' + method + ' ' + req.path + ' never sent a response. Every route must end with res.json(), res.send() or res.status(…).json().'); resolve({ status: 0, error: 'No response: the route never answered (missing res.json?)' }); } }, 3000);
+            return;
+          }
+          return finish(404, 'Cannot ' + method + ' ' + req.path, 'text/html');
+        }
+        var L = stack[i];
+        if (L.method && L.method !== 'ALL' && L.method !== method) return run(i + 1, err);
+        var m = L.path == null ? { params: {} } : matchPath(L.path, req.path, !L.method);
+        if (!m) return run(i + 1, err);
+        var isErr = L.fn.length === 4;
+        if (err && !isErr) return run(i + 1, err);
+        if (!err && isErr) return run(i + 1);
+        if (L.method) { req.params = m.params; invoked = true; }
+        var called = false;
+        var next = function (e) { if (called) return; called = true; if (e === 'route') e = undefined; run(i + 1, e); };
+        try {
+          var r = isErr ? L.fn(err, req, res, next) : L.fn(req, res, next);
+          if (r && typeof r.then === 'function') r.then(null, function (e) { next(e || new Error('Rejected promise')); });
+        } catch (e) { next(e); }
+        if (L.method && !called && !done) {
+          // a route that neither answered nor called next: wait (it may be async)
+          if (!waiter) waiter = setTimeout(function () { if (!done && !called) { done = true; sc.warn('[studio] ' + method + ' ' + req.path + ' never sent a response. Every route must end with res.json(), res.send() or res.status(…).json().'); resolve({ status: 0, error: 'No response: the route never answered (missing res.json?)' }); } }, 3000);
+        }
+      }
+      try { run(0); } catch (e) { sc.error(e.name + ': ' + e.message); finish(500, 'Internal Server Error', 'text/html'); }
+    });
+  }
+
+  /* ================= runtime ================= */
+  var __rt = window.__rt = {
+    sc: sc, bc: bc, mods: {}, listening: 0, app: null, defaultExport: null, App: null,
+    proc: { env: { MONGODB_URI: 'mongodb+srv://student:secret@cluster0.example.mongodb.net/kitabswap', PORT: '3000', NODE_ENV: 'development' }, exit: function () {} },
+    req: function (name) {
+      if (name === 'express') return express;
+      if (name === 'mongoose') return mongoose;
+      if (name === 'dotenv' || name === 'dotenv/config') return { config: function () { return { parsed: {} }; } };
+      if (name === 'cors') return function () { return function (req, res, next) { next(); }; };
+      if (/(^|\/)models\/Book(\.js)?$/.test(name)) {
+        if (!__rt.mods.book) throw new Error("Cannot find module './models/Book' (models/Book.js did not load: see the error above, or it has no module.exports)");
+        return __rt.mods.book;
+      }
+      throw new Error("Cannot find module '" + name + "'. The studio provides express, mongoose, dotenv, cors and ./models/Book.");
+    }
+  };
+  __rt.fetch = function (input, init) {
+    init = init || {};
+    var url = typeof input === 'string' ? input : input && input.url;
+    var method = String(init.method || 'GET').toUpperCase();
+    var headers = {};
+    if (init.headers) { if (typeof init.headers.forEach === 'function' && !Array.isArray(init.headers)) init.headers.forEach(function (v, k) { headers[k] = v; }); else Object.assign(headers, init.headers); }
+    var body = init.body == null ? null : String(init.body);
+    var u;
+    try { u = new URL(url, 'http://localhost:5173'); } catch (e) { return Promise.reject(new TypeError('Failed to fetch: invalid URL ' + url)); }
+    if (['localhost:5173', 'localhost:3000'].indexOf(u.host) < 0) return Promise.reject(new TypeError('Failed to fetch: the studio can only reach its own server, at /api/…'));
+    var path = u.pathname + u.search, t0 = Date.now();
+    return new Promise(function (resolve, reject) {
+      setTimeout(function () {
+        dispatch(method, path, headers, body).then(function (r) {
+          post('net', { src: 'browser', method: method, url: path, status: r.status, reqBody: body, resBody: r.body, error: r.error, ms: Date.now() - t0 });
+          if (r.status === 0) return reject(new TypeError('Failed to fetch'));
+          resolve({
+            ok: r.status >= 200 && r.status < 300, status: r.status, statusText: STATUS[r.status] || '', url: path,
+            headers: { get: function (k) { return String(k).toLowerCase() === 'content-type' ? r.type : null; } },
+            json: function () { return new Promise(function (ok, bad) { try { ok(JSON.parse(r.body)); } catch (e) { bad(new SyntaxError('Unexpected token \'' + (String(r.body).trim()[0] || ' ') + '\', "' + String(r.body).slice(0, 30) + '" is not valid JSON')); } }); },
+            text: function () { return Promise.resolve(r.body); }
+          });
+        });
+      }, 220);
+    });
+  };
+
+  function syntaxCheck(file, code, jsx) {
+    try { Babel.transform(code, { filename: file, presets: jsx ? ['react'] : [], sourceType: 'script', parserOpts: { allowReturnOutsideFunction: true, allowAwaitOutsideFunction: true } }); return true; }
+    catch (e) { post('log', { src: srcOf(file), lvl: 'error', text: 'SyntaxError in ' + e.message.replace(/^\/?/, '').split('\n').slice(0, 8).join('\n') }); return false; }
+  }
+  function inject(file, code) {
+    current = file;
+    var s = document.createElement('script'); s.textContent = code + '\n//# sourceURL=' + file;
+    document.head.appendChild(s); s.remove();
+    current = '';
+  }
+  function runModule(file, code) {
+    if (!syntaxCheck(file, code, false)) return;
+    inject(file, '(function(module){(function(require,module,exports,console,process,__filename){\n' + code + '\n})(__rt.req,module,module.exports,__rt.sc,__rt.proc,' + JSON.stringify(file) + ');__rt.mods.book=module.exports;})({exports:{}});');
+  }
+  function runServer(code) {
+    if (!syntaxCheck('server.js', code, false)) return;
+    inject('server.js', '(function(require,module,exports,console,process){\n' + code + '\n})(__rt.req,{exports:{}},{},__rt.sc,__rt.proc);');
+  }
+  function runApp(code) {
+    var src = code.split('\n').map(function (l) {
+      if (/^\s*import\s/.test(l)) return '';
+      return l.replace(/^(\s*)export\s+default\s+(?=function|class)/, '$1')
+        .replace(/^(\s*)export\s+default\s+([A-Za-z_$][\w$]*)\s*;?\s*$/, '$1__rt.defaultExport = $2;')
+        .replace(/^(\s*)export\s+(?=const|let|function|class)/, '$1');
+    }).join('\n');
+    var out;
+    try { out = Babel.transform(src, { presets: ['react'], filename: 'App.jsx' }).code; }
+    catch (e) { post('log', { src: 'browser', lvl: 'error', text: 'SyntaxError in ' + e.message.replace(/^\/?/, '').split('\n').slice(0, 8).join('\n') }); return false; }
+    inject('src/App.jsx', '(function(React,ReactDOM,useState,useEffect,useRef,useMemo,useCallback,fetch,console){\n' + out + '\n;__rt.App=(typeof App==="function")?App:(__rt.defaultExport||null);})(React,ReactDOM,React.useState,React.useEffect,React.useRef,React.useMemo,React.useCallback,__rt.fetch,__rt.bc);');
+    return true;
+  }
+
+  /* DOM snapshots for the studio's checks */
+  var root = document.getElementById('root'), snapT = null;
+  var snap = function () { clearTimeout(snapT); snapT = setTimeout(function () { post('dom', { html: root.innerHTML.slice(0, 60000) }); }, 120); };
+  new MutationObserver(snap).observe(root, { subtree: true, childList: true, characterData: true, attributes: true });
+
+  /* messages from the studio */
+  var setVal = function (el, v) {
+    var proto = el.tagName === 'SELECT' ? HTMLSelectElement.prototype : el.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+    Object.getOwnPropertyDescriptor(proto, 'value').set.call(el, v);
+    el.dispatchEvent(new Event(el.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true }));
+  };
+  async function modelTest() {
+    var Book = __rt.mods.book, r = {};
+    r.exported = !!(Book && typeof Book.find === 'function' && Book.modelName === 'Book');
+    if (!r.exported) return r;
+    testMode = true;
+    var fails = async function (d) { try { await Book.create(d); return null; } catch (e) { return e; } };
+    var e = await fails({ price: 10 }); r.titleRequired = !!(e && e.errors && e.errors.title && e.errors.title.kind === 'required');
+    e = await fails({ title: 'X' }); r.priceRequired = !!(e && e.errors && e.errors.price && e.errors.price.kind === 'required');
+    e = await fails({ title: 'X', price: -1 }); r.priceMin = !!(e && e.errors && e.errors.price && e.errors.price.kind === 'min');
+    e = await fails({ title: 'X', price: 5, condition: 'broken' }); r.condEnum = !!(e && e.errors && e.errors.condition);
+    try { var d = await Book.create({ title: '  Spaced  ', price: 5 }); r.trim = d.title === 'Spaced'; r.defaults = d.category === 'Other' && d.condition === 'good'; r.timestamps = !!d.createdAt; await Book.deleteMany({ title: { $in: ['Spaced', 'X'] } }); }
+    catch (x) { r.trim = r.defaults = false; }
+    testMode = false;
+    return r;
+  }
+  window.addEventListener('message', async function (e) {
+    var d = e.data; if (!d || d.__studio !== ID || e.source !== parent) return;
+    if (d.t === 'req') {
+      var t0 = Date.now(), hs = d.body != null && d.body !== '' ? { 'Content-Type': 'application/json' } : {};
+      var r = await dispatch(d.method, d.url, hs, d.body != null && d.body !== '' ? d.body : null);
+      post('net', { src: 'tester', method: d.method, url: d.url, status: r.status, reqBody: d.body || null, resBody: r.body, error: r.error, ms: Date.now() - t0 });
+      post('reply', { id: d.id, status: r.status, body: r.body, type: r.type, error: r.error });
+    } else if (d.t === 'probe') {
+      var result = null, ok = true;
+      try {
+        if (d.kind === 'click') {
+          var btns = [].slice.call(root.querySelectorAll('button')).filter(function (b) { return b.textContent.toLowerCase().indexOf(d.text.toLowerCase()) >= 0; });
+          if (!btns.length) ok = false; else btns[d.index || 0].click();
+        } else if (d.kind === 'fill') {
+          var el = root.querySelector(d.selector); if (!el) ok = false; else setVal(el, d.value);
+        } else if (d.kind === 'modeltest') {
+          result = await modelTest();
+        }
+      } catch (x) { ok = false; result = String(x && x.message || x); }
+      post('reply', { id: d.id, ok: ok, result: result });
+    }
+  });
+
+  /* boot */
+  function boot() {
+    if (!window.React || !window.ReactDOM || !window.Babel) { post('fatal', { text: 'React and Babel could not be loaded. The studio needs an internet connection to fetch them; check it and press Run again.' }); return; }
+    var F = window.__FILES || {};
+    runModule('models/Book.js', F.model || '');
+    runServer(F.server || '');
+    var ok = runApp(F.app || '');
+    var Boundary = (function () {
+      function B(p) { React.Component.call(this, p); this.state = { err: null }; }
+      B.prototype = Object.create(React.Component.prototype); B.prototype.constructor = B;
+      B.getDerivedStateFromError = function (err) { return { err: err }; };
+      B.prototype.render = function () {
+        if (this.state.err) return React.createElement('div', { className: 'crash' }, React.createElement('b', null, 'The page crashed'), React.createElement('pre', null, String(this.state.err && this.state.err.message || this.state.err)), React.createElement('p', null, 'Read the error in the console, fix App.jsx and press Run.'));
+        return this.props.children;
+      };
+      return B;
+    })();
+    if (ok && __rt.App) {
+      try { ReactDOM.createRoot(root).render(React.createElement(Boundary, null, React.createElement(__rt.App))); }
+      catch (x) { bc.error(x.name + ': ' + x.message); }
+    } else if (ok) {
+      root.innerHTML = '<div class="crash"><b>Nothing to show</b><p>App.jsx must define a component called App (export default function App).</p></div>';
+    }
+    setTimeout(function () { post('ready', { listening: !!__rt.listening }); snap(); }, 60);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+})();
+
+</script>
+<script type="text/plain" id="app-css">
+*{box-sizing:border-box}
+body{margin:0;font-family:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;color:#15171C;background:#F6F4EE;line-height:1.5;font-size:15px}
+h1,h2,h3{font-family:'Fraunces',Georgia,serif;margin:0;line-height:1.2}
+button{font:inherit;cursor:pointer;border:1.5px solid #15171C;background:#15171C;color:#fff;border-radius:999px;padding:6px 14px;font-weight:700}
+button:hover{background:#2B3142}
+input,select{font:inherit;padding:7px 10px;border:1.5px solid #C9CDD6;border-radius:8px;background:#fff;color:#15171C;min-width:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;background:#15171C;color:#fff;border-bottom:4px solid #E0A11C}
+.topbar h1{font-size:1.35rem;font-weight:800}
+.badge{background:#E0A11C;color:#15171C;border-radius:999px;padding:3px 12px;font-weight:700}
+main{padding:16px 18px;display:grid;gap:16px}
+.books{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.book-card{background:#fff;border:1px solid #E1E3E9;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.book-card h3{font-size:1.02rem}
+.book-card .meta{margin:0;color:#5B6170;font-size:.85rem}
+.book-card .price{margin:2px 0 8px;font-weight:700;font-size:1.05rem}
+.book-card button{margin-top:auto;align-self:flex-start}
+.sell{background:#fff;border:1.5px dashed #D6970F;border-radius:12px;padding:12px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sell h2{font-size:1.05rem;width:100%}
+.sell input{flex:1 1 140px}
+.error{color:#B01F2D;font-weight:700;width:100%;margin:0}
+.loading{color:#5B6170}
+.cart{background:#fff;border:1px solid #E1E3E9;border-radius:12px;padding:12px 14px}
+.cart h2{font-size:1.05rem;margin-bottom:6px}
+.cart ul{margin:0;padding-left:1.2em}
+.placeholder{padding:28px 22px;text-align:center;color:#5B6170}
+.placeholder h1{color:#15171C;margin-bottom:8px}
+.crash{margin:16px;padding:14px 16px;border-radius:12px;background:#FBE7E9;border-left:5px solid #B01F2D;color:#15171C}
+.crash pre{white-space:pre-wrap;font-size:.85rem;margin:6px 0}
+
+</script>
+<script>
+/* ===================== checkpoint code ===================== */
+const C = {};
+C.srvStart = `const express = require('express')
+const app = express()
+
+// Our "database" for now: an array in the server's memory
+const books = [
+  { _id: '1', title: 'Clean Code', price: 250, category: 'Programming' },
+  { _id: '2', title: 'Database Systems', price: 300, category: 'Databases' },
+  { _id: '3', title: 'SQL Basics', price: 180, category: 'Databases' }
+]
+
+// TODO (step 1): when the browser asks for GET /api/books,
+// send the books array back as JSON
+
+app.listen(3000, () => console.log('KitabSwap API listening on http://localhost:3000'))
+`;
+C.srv1 = `const express = require('express')
+const app = express()
+
+// Our "database" for now: an array in the server's memory
+const books = [
+  { _id: '1', title: 'Clean Code', price: 250, category: 'Programming' },
+  { _id: '2', title: 'Database Systems', price: 300, category: 'Databases' },
+  { _id: '3', title: 'SQL Basics', price: 180, category: 'Databases' }
+]
+
+app.get('/api/books', (req, res) => {
+  res.json(books)
+})
+
+app.listen(3000, () => console.log('KitabSwap API listening on http://localhost:3000'))
+`;
+C.srv3Start = `require('dotenv').config()
+const express = require('express')
+// TODO (step 3a): require mongoose and the Book model from ./models/Book
+
+const app = express()
+
+// TODO (step 3b): connect to MongoDB with mongoose.connect(process.env.MONGODB_URI)
+
+// The in-memory array is no longer needed: MongoDB holds the books now
+const books = [
+  { _id: '1', title: 'Clean Code', price: 250, category: 'Programming' },
+  { _id: '2', title: 'Database Systems', price: 300, category: 'Databases' },
+  { _id: '3', title: 'SQL Basics', price: 180, category: 'Databases' }
+]
+
+app.get('/api/books', (req, res) => {
+  // TODO (step 3c): read the books from MongoDB with Book.find()
+  // TODO (step 3d): if the URL has ?category=..., only return that category
+  res.json(books)
+})
+
+app.listen(3000, () => console.log('KitabSwap API listening on http://localhost:3000'))
+`;
+C.srv3 = `require('dotenv').config()
+const express = require('express')
+const mongoose = require('mongoose')
+const Book = require('./models/Book')
+
+const app = express()
+
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection failed:', err.message))
+
+app.get('/api/books', async (req, res) => {
+  const filter = {}
+  if (req.query.category) filter.category = req.query.category
+  const books = await Book.find(filter)
+  res.json(books)
+})
+
+app.listen(3000, () => console.log('KitabSwap API listening on http://localhost:3000'))
+`;
+C.srv4Start = C.srv3.replace(`const app = express()
+`, `const app = express()
+// TODO (step 4a): let Express read JSON request bodies (middleware)
+`).replace(`app.listen(3000`, `// TODO (step 4b): POST /api/books
+//   create a book from req.body with Book.create(...)
+//   success: answer 201 with the saved book
+//   validation error: answer 400 with { error: err.message }
+
+app.listen(3000`);
+C.srv4 = C.srv3.replace(`const app = express()
+`, `const app = express()
+app.use(express.json())
+`).replace(`app.listen(3000`, `app.post('/api/books', async (req, res) => {
+  try {
+    const book = await Book.create(req.body)
+    res.status(201).json(book)
+  } catch (err) {
+    res.status(400).json({ error: err.message })
+  }
+})
+
+app.listen(3000`);
+
+C.model0 = `// models/Book.js
+// Nothing here yet: the model arrives in step 2.
+`;
+C.modelStart = `const mongoose = require('mongoose')
+
+// TODO (step 2a): a schema for one book:
+//   title     String, required, trimmed
+//   price     Number, required, at least 0
+//   category  String, default 'Other'
+//   condition String, only 'new', 'good' or 'fair', default 'good'
+//   seller    String
+// and the option { timestamps: true }
+
+// TODO (step 2b): turn the schema into a model called 'Book' and export it
+`;
+C.model = `const mongoose = require('mongoose')
+
+const bookSchema = new mongoose.Schema({
+  title: { type: String, required: true, trim: true },
+  price: { type: Number, required: true, min: 0 },
+  category: { type: String, default: 'Other' },
+  condition: { type: String, enum: ['new', 'good', 'fair'], default: 'good' },
+  seller: String
+}, { timestamps: true })
+
+module.exports = mongoose.model('Book', bookSchema)
+`;
+
+C.appWait = `// The React front end arrives in Session 2.
+// For now, talk to your API with the Request tester (the tab next to Console).
+export default function App() {
+  return (
+    <main className="placeholder">
+      <h1>KitabSwap</h1>
+      <p>The front end arrives in Session 2. Use the Request tester to call your API.</p>
+    </main>
+  )
+}
+`;
+C.app5Start = `// Pasted from our static HTML mockup (converted to JSX in topic 7.4).
+// It works, but every card is copied by hand.
+const BOOKS = [
+  { _id: 'a1', title: 'Clean Code', price: 250, category: 'Programming' },
+  { _id: 'a2', title: 'Database Systems', price: 300, category: 'Databases' },
+  { _id: 'a3', title: 'SQL Basics', price: 180, category: 'Databases' }
+]
+
+// TODO (step 5): build Header, BookCard and BookList components,
+// render one BookCard per book with map(), and give each a key.
+
+export default function App() {
+  return (
+    <>
+      <header className="topbar">
+        <h1>KitabSwap</h1>
+        <span className="badge">🛒 0</span>
+      </header>
+      <main>
+        <section className="books">
+          <article className="book-card">
+            <h3>Clean Code</h3>
+            <p className="meta">Programming</p>
+            <p className="price">250 EGP</p>
+            <button>Add to cart</button>
+          </article>
+          <article className="book-card">
+            <h3>Database Systems</h3>
+            <p className="meta">Databases</p>
+            <p className="price">300 EGP</p>
+            <button>Add to cart</button>
+          </article>
+          <article className="book-card">
+            <h3>SQL Basics</h3>
+            <p className="meta">Databases</p>
+            <p className="price">180 EGP</p>
+            <button>Add to cart</button>
+          </article>
+        </section>
+      </main>
+    </>
+  )
+}
+`;
+C.comps5 = `function Header({ cartCount }) {
+  return (
+    <header className="topbar">
+      <h1>KitabSwap</h1>
+      <span className="badge">🛒 {cartCount}</span>
+    </header>
+  )
+}
+
+function BookCard({ book }) {
+  return (
+    <article className="book-card">
+      <h3>{book.title}</h3>
+      <p className="meta">{book.category}</p>
+      <p className="price">{book.price} EGP</p>
+      <button>Add to cart</button>
+    </article>
+  )
+}
+
+function BookList({ books }) {
+  return (
+    <section className="books">
+      {books.map(book => <BookCard key={book._id} book={book} />)}
+    </section>
+  )
+}
+`;
+C.app5 = `const BOOKS = [
+  { _id: 'a1', title: 'Clean Code', price: 250, category: 'Programming' },
+  { _id: 'a2', title: 'Database Systems', price: 300, category: 'Databases' },
+  { _id: 'a3', title: 'SQL Basics', price: 180, category: 'Databases' }
+]
+
+${C.comps5}
+export default function App() {
+  return (
+    <>
+      <Header cartCount={0} />
+      <main>
+        <BookList books={BOOKS} />
+      </main>
+    </>
+  )
+}
+`;
+C.app6Start = C.app5.replace(`export default function App() {`, `// TODO (step 6): replace BOOKS with state that starts empty,
+// load the books from GET /api/books once, after the first render,
+// and show "Loading books…" until they arrive.
+
+export default function App() {`);
+C.app6 = `import { useState, useEffect } from 'react'
+
+${C.comps5}
+export default function App() {
+  const [books, setBooks] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/books')
+      .then(res => res.json())
+      .then(data => {
+        setBooks(data)
+        setLoading(false)
+      })
+  }, [])
+
+  return (
+    <>
+      <Header cartCount={0} />
+      <main>
+        {loading ? <p className="loading">Loading books…</p> : <BookList books={books} />}
+      </main>
+    </>
+  )
+}
+`;
+C.comps7 = `function Header({ cartCount }) {
+  return (
+    <header className="topbar">
+      <h1>KitabSwap</h1>
+      <span className="badge">🛒 {cartCount}</span>
+    </header>
+  )
+}
+
+function BookCard({ book, onAdd }) {
+  return (
+    <article className="book-card">
+      <h3>{book.title}</h3>
+      <p className="meta">{book.category}</p>
+      <p className="price">{book.price} EGP</p>
+      <button onClick={() => onAdd(book)}>Add to cart</button>
+    </article>
+  )
+}
+
+function BookList({ books, onAdd }) {
+  return (
+    <section className="books">
+      {books.map(book => <BookCard key={book._id} book={book} onAdd={onAdd} />)}
+    </section>
+  )
+}
+`;
+C.app7Start = C.app6.replace(`export default function App() {`, `// TODO (step 7): keep a cart (an array of books) in App's state.
+// Give BookList and BookCard an onAdd function that adds a book,
+// and show the number of books in the cart in the Header badge.
+
+export default function App() {`);
+C.app7 = `import { useState, useEffect } from 'react'
+
+${C.comps7}
+export default function App() {
+  const [books, setBooks] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [cart, setCart] = useState([])
+
+  useEffect(() => {
+    fetch('/api/books')
+      .then(res => res.json())
+      .then(data => {
+        setBooks(data)
+        setLoading(false)
+      })
+  }, [])
+
+  function addToCart(book) {
+    setCart([...cart, book])
+  }
+
+  return (
+    <>
+      <Header cartCount={cart.length} />
+      <main>
+        {loading ? <p className="loading">Loading books…</p> : <BookList books={books} onAdd={addToCart} />}
+      </main>
+    </>
+  )
+}
+`;
+C.sellForm = `function SellForm({ onCreated }) {
+  const [title, setTitle] = useState('')
+  const [price, setPrice] = useState('')
+  const [category, setCategory] = useState('Programming')
+  const [error, setError] = useState('')
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    const res = await fetch('/api/books', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, price, category })
+    })
+    const data = await res.json()
+    if (!res.ok) {
+      setError(data.error)
+      return
+    }
+    onCreated(data)
+    setTitle('')
+    setPrice('')
+    setError('')
+  }
+
+  return (
+    <form className="sell" onSubmit={handleSubmit}>
+      <h2>Sell a book</h2>
+      <input placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} />
+      <input placeholder="Price (EGP)" type="number" value={price} onChange={e => setPrice(e.target.value)} />
+      <select value={category} onChange={e => setCategory(e.target.value)}>
+        <option>Programming</option>
+        <option>Databases</option>
+        <option>Business</option>
+        <option>Other</option>
+      </select>
+      <button type="submit">Publish</button>
+      {error && <p className="error">{error}</p>}
+    </form>
+  )
+}
+`;
+C.app8Start = C.app7.replace(`export default function App() {`, `// TODO (step 8): a SellForm component with controlled inputs
+// (placeholders "Title" and "Price (EGP)", a category select and a Publish button).
+// On submit, POST the book as JSON to /api/books.
+//   201: add the book the SERVER sent back to the list
+//   400: show the server's error message
+
+export default function App() {`);
+C.app8 = `import { useState, useEffect } from 'react'
+
+${C.comps7}
+${C.sellForm}
+export default function App() {
+  const [books, setBooks] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [cart, setCart] = useState([])
+
+  useEffect(() => {
+    fetch('/api/books')
+      .then(res => res.json())
+      .then(data => {
+        setBooks(data)
+        setLoading(false)
+      })
+  }, [])
+
+  function addToCart(book) {
+    setCart([...cart, book])
+  }
+
+  function handleCreated(book) {
+    setBooks([...books, book])
+  }
+
+  return (
+    <>
+      <Header cartCount={cart.length} />
+      <main>
+        <SellForm onCreated={handleCreated} />
+        {loading ? <p className="loading">Loading books…</p> : <BookList books={books} onAdd={addToCart} />}
+      </main>
+    </>
+  )
+}
+`;
+const FINAL = { server: C.srv4, model: C.model, app: C.app8 };
+
+/* ===================== check helpers ===================== */
+const HEX24 = /^[0-9a-f]{24}$/i;
+const cards = d => d.querySelectorAll('.book-card').length;
+const noComments = s => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+
+/* ===================== the steps ===================== */
+const STEPS = [
+  {
+    n: 0, session: 0, short: 'The MERN model', title: 'The MERN model: one page, four layers', layers: ['R', 'E', 'N', 'M'], notes: '1.8, 2.1, 2.2', focus: 'app',
+    start: FINAL, solution: null,
+    intro: 'This is the finished KitabSwap page you will build in two sessions. Press Run, try it, and then trace how one click travels through every layer.',
+    why: `<p>KitabSwap is a <strong>single-page application</strong> (topic 2.1): the browser loads one page once, and React updates parts of it as data arrives. Behind that page, MERN splits the work into three tiers, each with one job:</p>
+<ul>
+<li><b>Presentation, in the browser: React (R).</b> Shows the data and reacts to the user. It owns only what is on screen right now.</li>
+<li><b>Logic, on the server: Express (E) running on Node.js (N).</b> Decides what each request means, checks it, and answers with JSON.</li>
+<li><b>Data: MongoDB (M), reached through Mongoose.</b> Stores the books so they outlive any single visit and are shared by everyone.</li>
+</ul>
+<p>Four rules explain almost every design decision in the next two sessions:</p>
+<ol>
+<li><b>The browser never talks to the database.</b> The connection string is a secret, and the rules (no negative prices) must be enforced somewhere a user cannot bypass. Only the server talks to MongoDB.</li>
+<li><b>The layers speak JSON over HTTP.</b> React sends a request, Express answers JSON, MongoDB stores documents that look like JSON (BSON). The same shape of data travels end to end.</li>
+<li><b>Each layer can change without breaking the others,</b> as long as the agreement between them, the API (URL, method, JSON shape), stays the same. You will see this pay off in step 3.</li>
+<li><b>One language everywhere:</b> JavaScript in the browser, on the server and in the queries.</li>
+</ol>`,
+    trace: [
+      ['ui', 'A student fills in the "Sell a book" form and clicks Publish. React (in the browser) handles the click.'],
+      ['http', 'React sends an HTTP request: POST /api/books, with the book as JSON in the body.'],
+      ['route', 'Express (on Node.js, on the server) matches POST /api/books to a route function.'],
+      ['model', 'The route hands the data to the Mongoose model, which checks the rules: a title, a price of at least 0.'],
+      ['db', 'Mongoose stores the document in the books collection in MongoDB. MongoDB gives it an _id.'],
+      ['route', 'The saved document comes back, and Express answers 201 Created with it as JSON.'],
+      ['http', 'The JSON response travels back to the browser.'],
+      ['state', 'React puts the new book into state…'],
+      ['ui', '…and re-renders: the new card appears without reloading the page.']
+    ],
+    predict: { q: 'A student types a price of −50 and presses Publish. Which layer should refuse it, and why there?', a: 'The server, in the Mongoose model (<code>min: 0</code>). React may also check, as a convenience, but anyone can send HTTP requests directly, without your page (you will do exactly that with the Request tester). Only a check on the server cannot be bypassed.' },
+    task: `<ol><li>Press <b>Run</b>. Add a book to the cart, then publish a new book.</li><li>Open the <b>Network</b> tab. Which action sent a request, and which did not? Why?</li><li>Press <b>Trace the request</b> in the MERN map and follow one Publish through every layer.</li></ol>`,
+    checks: []
+  },
+  {
+    n: 1, session: 1, short: 'A first route', title: 'A first route: the API answers', layers: ['N', 'E'], notes: '1.6, 2.4, 3.2, 3.6', focus: 'server',
+    start: { server: C.srvStart, model: C.model0, app: C.appWait }, solution: { server: C.srv1, model: C.model0, app: C.appWait },
+    intro: 'Session 1 builds the back end, from the outside in: first the door (a route), then the rules (the model), then the storage (MongoDB).',
+    why: `<p><b>Node.js</b> runs JavaScript outside the browser, so it can act as a server that is always on and listening (topic 1.6). <b>Express</b> turns each incoming request, a method plus a URL such as <code>GET /api/books</code>, into a call to the function you register for it (topic 3.6).</p>
+<p>That method and URL, and the JSON that comes back, form a <strong>contract</strong>. In session 2, React will be written against exactly this contract, without caring how the server finds the books. The <code>/api</code> prefix marks URLs that return <em>data</em> rather than pages.</p>`,
+    trace: [
+      ['http', 'A client asks: GET /api/books. Today the client is the Request tester; in session 2 it will be React.'],
+      ['route', 'Express compares the method and path with its routes and calls your function with req and res.'],
+      ['route', 'For now the books live in an array in the server\'s memory, so no database is involved yet.'],
+      ['http', 'res.json(books) turns the array into JSON and sends it back with status 200.']
+    ],
+    predict: { q: 'Before you write the route, what will GET /api/books return?', a: '<code>404 Cannot GET /api/books</code>. The server is running and Express answers, but no route matches. A 404 means "the server is up, that address isn\'t". If nothing were listening at all, there would be no answer.' },
+    task: `<ol><li>Open the <b>Request tester</b> tab, send <code>GET /api/books</code> and read the 404.</li><li>In <code>server.js</code>, add a route for <code>GET /api/books</code> that answers with <code>res.json(books)</code>.</li><li>Press <b>Run</b>, send the request again, then press <b>Check my work</b>.</li></ol>`,
+    checks: [
+      { label: 'The server is listening (app.listen was called)', hint: 'Keep the app.listen(3000, …) line at the end of server.js.', run: async x => x.state.listening },
+      { label: 'GET /api/books answers 200 OK', hint: 'Register the route with app.get(\'/api/books\', (req, res) => { … }). Check the spelling of the path.', run: async x => (await x.api('GET', '/api/books')).status === 200 },
+      { label: 'It sends JSON: an array of the 3 books', hint: 'Answer with res.json(books), not res.send(\'books\').', run: async x => { const r = await x.api('GET', '/api/books'); return Array.isArray(r.json) && r.json.length === 3; } }
+    ]
+  },
+  {
+    n: 2, session: 1, short: 'The model', title: 'Describe a book: the Mongoose model', layers: ['M'], notes: '4.5, 4.7', focus: 'model',
+    start: { server: C.srv1, model: C.modelStart, app: C.appWait }, solution: { server: C.srv1, model: C.model, app: C.appWait },
+    why: `<p>MongoDB is <strong>schema-less</strong>: it will store any document you give it, including a book with no title or a price of "banana". So where do the rules live? In <b>Mongoose</b>, inside your Node.js server, before the data ever reaches MongoDB.</p>
+<ul>
+<li>A <b>schema</b> describes the shape and the rules of one book: types, required fields, limits, defaults.</li>
+<li>A <b>model</b> is the object your routes use to talk to one collection. The model <code>Book</code> works with the <code>books</code> collection (Mongoose lower-cases and pluralises the name).</li>
+</ul>
+<p>Putting the rules in the model, rather than in each route, means every route that saves a book gets the same protection automatically: the logic layer guards the data layer.</p>`,
+    trace: [
+      ['route', 'Later, a route will call Book.create(data) with whatever a client sent.'],
+      ['model', 'The schema casts each field (the text "250" becomes the number 250), trims text, fills defaults and checks the rules.'],
+      ['model', 'If a rule fails, Mongoose throws a ValidationError and nothing is saved.'],
+      ['db', 'Only a valid document is sent to the books collection in MongoDB.']
+    ],
+    predict: { q: 'MongoDB itself is schema-less. So when a book arrives without a title, where exactly is required: true checked?', a: 'In Mongoose, in the server\'s memory, before anything is sent to MongoDB. The database never sees the invalid book. That is why the studio can test your model without any route at all.' },
+    task: `<ol><li>Open <code>models/Book.js</code>. Write the schema described in the comments, with <code>{ timestamps: true }</code>.</li><li>Export the model: <code>module.exports = mongoose.model('Book', bookSchema)</code>.</li><li>Press <b>Check my work</b>: the studio tries to save good and bad books with your model.</li></ol>`,
+    checks: [
+      { label: 'models/Book.js exports a model named Book', hint: 'End the file with module.exports = mongoose.model(\'Book\', bookSchema). Check the console for errors in Book.js.', run: async x => (await x.modeltest()).exported },
+      { label: 'title and price are required', hint: 'Use { type: String, required: true } for title and { type: Number, required: true } for price.', run: async x => { const r = await x.modeltest(); return r.titleRequired && r.priceRequired; } },
+      { label: 'price cannot be negative', hint: 'Add min: 0 to price.', run: async x => (await x.modeltest()).priceMin },
+      { label: 'condition only accepts new, good or fair', hint: 'Use enum: [\'new\', \'good\', \'fair\'] on condition.', run: async x => (await x.modeltest()).condEnum },
+      { label: 'title is trimmed; category and condition have defaults', hint: 'trim: true on title; default: \'Other\' on category; default: \'good\' on condition.', run: async x => { const r = await x.modeltest(); return r.trim && r.defaults; } }
+    ]
+  },
+  {
+    n: 3, session: 1, short: 'Read from MongoDB', title: 'Read from the database', layers: ['E', 'M'], notes: '3.4, 4.6, 4.8', focus: 'server',
+    start: { server: C.srv3Start, model: C.model, app: C.appWait }, solution: { server: C.srv3, model: C.model, app: C.appWait },
+    why: `<p>Swap the array for MongoDB. The data now <strong>survives restarts</strong> and is <strong>shared</strong> by everyone who uses the site. (The studio's simulated database already holds four books, as yours on Atlas would after Lab 4.)</p>
+<p>Notice what does <em>not</em> change: the URL and the JSON shape. The contract from step 1 still holds, so React will never know the storage changed. That is rule 3 of the MERN model at work.</p>
+<p>Two new ideas:</p>
+<ul>
+<li><b>async / await.</b> The database is another machine, so <code>Book.find()</code> returns a promise. The route waits for it, without blocking other visitors.</li>
+<li><b>Filtering on the server.</b> <code>/api/books?category=Databases</code> puts the filter in the <em>query string</em> (topic 3.4). Express reads it as <code>req.query.category</code>, and you turn it into a MongoDB filter, so only matching books cross the network.</li>
+</ul>`,
+    trace: [
+      ['http', 'GET /api/books?category=Databases arrives.'],
+      ['route', 'Express reads req.query.category ("Databases") and builds a filter object: { category: "Databases" }.'],
+      ['model', 'await Book.find(filter) asks Mongoose for matching books.'],
+      ['db', 'MongoDB returns only the matching documents, each with its own _id.'],
+      ['route', 'res.json(books) sends them back. Same URL, same JSON shape as in step 1.'],
+      ['http', 'The client receives JSON and cannot tell that the storage changed.']
+    ],
+    predict: { q: 'You forget mongoose.connect(). What happens when the route calls Book.find()?', a: 'Mongoose holds (buffers) the query, waiting for a connection, and after a timeout it throws. The route never answers in the meantime. Try it: comment out the connect line and send a request.' },
+    task: `<ol><li>Require <code>mongoose</code> and <code>./models/Book</code>, and call <code>mongoose.connect(process.env.MONGODB_URI)</code>.</li><li>Make the route <code>async</code>, delete the array, and answer with <code>await Book.find(filter)</code>.</li><li>Build <code>filter</code> from <code>req.query.category</code>, then test <code>/api/books</code> and <code>/api/books?category=Databases</code>.</li></ol>`,
+    checks: [
+      { label: 'The server connects with mongoose.connect()', hint: 'Call mongoose.connect(process.env.MONGODB_URI) after creating the app.', run: async x => /mongoose\.connect\s*\(/.test(noComments(x.src('server'))) },
+      { label: 'GET /api/books returns the 4 books stored in MongoDB', hint: 'Use const books = await Book.find(filter) inside an async route. MongoDB ids are 24 characters long.', run: async x => { const r = await x.api('GET', '/api/books'); return r.status === 200 && Array.isArray(r.json) && r.json.length === 4 && r.json.every(b => HEX24.test(b._id)); } },
+      { label: 'GET /api/books?category=Databases returns only the 2 database books', hint: 'if (req.query.category) filter.category = req.query.category', run: async x => { const r = await x.api('GET', '/api/books?category=Databases'); return Array.isArray(r.json) && r.json.length === 2 && r.json.every(b => b.category === 'Databases'); } }
+    ]
+  },
+  {
+    n: 4, session: 1, short: 'Create a book', title: 'Create a book: POST and status codes', layers: ['E', 'M'], notes: '3.7, 3.8, 4.7', focus: 'server',
+    start: { server: C.srv4Start, model: C.model, app: C.appWait }, solution: { server: C.srv4, model: C.model, app: C.appWait },
+    intro: 'This completes the API: read and create, the R and C of CRUD (topic 2.2).',
+    why: `<p>A <code>POST</code> carries data in the request <strong>body</strong>, as JSON text. Express does not read bodies by default: the middleware <code>express.json()</code> parses that text into <code>req.body</code> (topic 3.8). Without it, <code>req.body</code> is <code>undefined</code>.</p>
+<p>The <strong>status code</strong> is how the server tells the client what happened, and React will branch on it in session 2:</p>
+<ul>
+<li><b>201 Created</b>: saved; the reply is the stored document, with the <code>_id</code> MongoDB gave it.</li>
+<li><b>400 Bad Request</b>: the client sent invalid data (the model refused it); the reply says why.</li>
+<li><b>500 Internal Server Error</b>: the server itself failed. A validation error is the client's mistake, so it should be a 400, which is why you catch it.</li>
+</ul>`,
+    trace: [
+      ['http', 'POST /api/books arrives with a JSON body: { "title": "…", "price": 120 }.'],
+      ['route', 'express.json() parses the body into req.body before the route runs.'],
+      ['model', 'Book.create(req.body) casts and validates: the rules from step 2 decide.'],
+      ['db', 'Valid: MongoDB stores it and assigns an _id.'],
+      ['route', 'The route answers 201 with the saved document, or 400 with { error } if validation failed.'],
+      ['http', 'The client reads the status code to know which happened.']
+    ],
+    predict: { q: 'Without app.use(express.json()), you POST a book that has a title. What does the server answer?', a: '400, "title is required"! <code>req.body</code> is <code>undefined</code>, so the model receives no title at all. When a server says a field is missing that you can see in your request, check the body parser and the Content-Type header first.' },
+    task: `<ol><li>Add <code>app.use(express.json())</code> before the routes.</li><li>Add <code>app.post('/api/books', …)</code>: <code>Book.create(req.body)</code> inside try/catch; 201 with the book, or 400 with <code>{ error: err.message }</code>.</li><li>In the Request tester, POST a valid book and one without a title. Then GET the list again.</li></ol>`,
+    checks: [
+      { label: 'POST /api/books with a valid book answers 201 Created', hint: 'res.status(201).json(book). Is express.json() registered before the route?', run: async x => (await x.api('POST', '/api/books', { title: 'Intro to Marketing', price: 120, category: 'Business' })).status === 201 },
+      { label: 'The reply is the saved document, with an _id and the default condition', hint: 'Send back what Book.create returned, not req.body.', run: async x => { const r = await x.api('POST', '/api/books', { title: 'Statistics', price: 90 }); return r.json && HEX24.test(r.json._id) && r.json.condition === 'good'; } },
+      { label: 'A book without a title is refused with 400 and an error message', hint: 'Wrap Book.create in try/catch and answer res.status(400).json({ error: err.message }).', run: async x => { const r = await x.api('POST', '/api/books', { price: 50 }); return r.status === 400 && r.json && typeof r.json.error === 'string' && /title/i.test(r.json.error); } },
+      { label: 'The new book appears in GET /api/books', hint: 'Book.create saves to the collection that Book.find reads from.', run: async x => { await x.api('POST', '/api/books', { title: 'Probe Book', price: 10 }); const r = await x.api('GET', '/api/books'); return Array.isArray(r.json) && r.json.some(b => b.title === 'Probe Book'); } }
+    ]
+  },
+  {
+    n: 5, session: 2, short: 'Components', title: 'From HTML to components', layers: ['R'], notes: '5.2, 5.3, 5.4, 7.4', focus: 'app',
+    start: { server: C.srv4, model: C.model, app: C.app5Start }, solution: { server: C.srv4, model: C.model, app: C.app5 },
+    intro: 'Session 2 builds the front end on top of the finished API from session 1.',
+    why: `<p>React is the <b>presentation layer</b>. Its components should mirror the <em>data</em>: the API returns a list of book documents, so the page is a <code>BookList</code> of one <code>BookCard</code> per book. The component tree has the same shape as the JSON.</p>
+<ul>
+<li><b>Props</b> carry one book down into one card (topic 5.4).</li>
+<li><b>map()</b> turns an array of data into an array of cards, however long it is.</li>
+<li><b>key</b> uses each book's <code>_id</code>. The id MongoDB created in the data layer becomes React's way of telling cards apart (topic 6.3).</li>
+</ul>
+<p>The books are still hard-coded here. In step 6 you swap the constant for the API, just as the server swapped its array for MongoDB in step 3.</p>`,
+    trace: [
+      ['state', 'For now the data is a constant array, BOOKS, inside the browser.'],
+      ['ui', 'App passes it to BookList as a prop.'],
+      ['ui', 'BookList maps each book to a BookCard, keyed by _id. No server is involved yet.']
+    ],
+    predict: { q: 'If the API returned 200 books, how many BookCard functions would you write?', a: 'One. <code>map()</code> renders it 200 times, each time with a different book prop. Components describe one thing; data decides how many.' },
+    task: `<ol><li>Write <code>Header</code> (prop <code>cartCount</code>), <code>BookCard</code> (prop <code>book</code>) and <code>BookList</code> (prop <code>books</code>), reusing the JSX that is already there.</li><li>In BookList, render <code>books.map(book =&gt; &lt;BookCard key={book._id} book={book} /&gt;)</code>.</li><li>Make App render <code>&lt;Header /&gt;</code> and <code>&lt;BookList books={BOOKS} /&gt;</code>.</li></ol>`,
+    checks: [
+      { label: 'A BookCard component exists and is used', hint: 'function BookCard({ book }) { return ( <article className="book-card"> … ) }', run: async x => { const s = noComments(x.src('app')); return /(function\s+BookCard|const\s+BookCard\s*=)/.test(s) && /<BookCard[\s/>]/.test(s); } },
+      { label: 'The cards are rendered with map()', hint: 'In BookList: {books.map(book => <BookCard … />)}', run: async x => /\.map\s*\(/.test(noComments(x.src('app'))) },
+      { label: 'Each card has a key', hint: '<BookCard key={book._id} book={book} />', run: async x => /<BookCard[^>]*key=\{/.test(noComments(x.src('app'))) },
+      { label: 'The page shows 3 book cards', hint: 'Keep className="book-card" on each article, and pass BOOKS to BookList.', run: async x => (await x.until(d => cards(d) === 3)) }
+    ]
+  },
+  {
+    n: 6, session: 2, short: 'Fetch the books', title: 'Fetch the books: the first full round trip', layers: ['R', 'E', 'M'], notes: '6.3, 6.5, 6.7', focus: 'app',
+    start: { server: C.srv4, model: C.model, app: C.app6Start }, solution: { server: C.srv4, model: C.model, app: C.app6 },
+    why: `<p>This step closes the loop: <b>React → Express → MongoDB → Express → React.</b></p>
+<ul>
+<li>The books now live in <b>state</b>, starting empty, because they arrive later than the first render.</li>
+<li>Loading data is a <b>side effect</b>, so it goes in <code>useEffect</code>, after React has drawn the page (topic 6.5). The empty dependency array <code>[]</code> means "once, when the page appears".</li>
+<li>When the JSON arrives, <code>setBooks(data)</code> changes state, and React re-renders with real data.</li>
+</ul>
+<p>You change only the front end. The server from session 1 is untouched, because React depends only on the contract: <code>GET /api/books</code> returns a JSON array.</p>`,
+    trace: [
+      ['ui', 'First render: books is [], so the page shows "Loading books…".'],
+      ['state', 'After the commit, useEffect runs and calls fetch(\'/api/books\').'],
+      ['http', 'GET /api/books goes to the server.'],
+      ['route', 'The Express route from step 3 runs…'],
+      ['model', '…calls Book.find()…'],
+      ['db', '…and MongoDB returns the documents.'],
+      ['http', 'JSON comes back to the browser.'],
+      ['state', 'setBooks(data) and setLoading(false) update state.'],
+      ['ui', 'React re-renders: four cards, keyed by their MongoDB _id.']
+    ],
+    predict: { q: 'How many requests should one page load send? What happens if you remove the [] from useEffect?', a: 'Exactly one. Without <code>[]</code>, the effect runs after every render: the fetch sets state, the new state causes a render, the render runs the effect again… an endless stream of requests. Try it and watch the Network tab.' },
+    task: `<ol><li>Replace <code>BOOKS</code> with <code>const [books, setBooks] = useState([])</code> and a <code>loading</code> state.</li><li>Add a <code>useEffect</code> with <code>[]</code> that fetches <code>/api/books</code>, then calls <code>setBooks</code> and <code>setLoading(false)</code>.</li><li>Show <code>Loading books…</code> while loading. Run, and count the requests in the Network tab.</li></ol>`,
+    checks: [
+      { label: 'useEffect calls fetch(\'/api/books\')', hint: 'useEffect(() => { fetch(\'/api/books\').then(res => res.json()).then(…) }, [])', run: async x => { const s = noComments(x.src('app')); return /useEffect\s*\(/.test(s) && /fetch\s*\(\s*['"`]\/api\/books/.test(s); } },
+      { label: 'The page shows the 4 books from the database', hint: 'Pass the books state (not BOOKS) to BookList, after setBooks(data).', run: async x => (await x.until(d => cards(d) === 4, 5000)) },
+      { label: 'Exactly one request when the page loads (no loop)', hint: 'Give useEffect an empty dependency array: useEffect(() => { … }, [])', run: async x => { await x.wait(1600); return x.state.net.filter(n => n.src === 'browser' && n.method === 'GET' && n.url.startsWith('/api/books')).length === 1; } }
+    ]
+  },
+  {
+    n: 7, session: 2, short: 'The cart', title: 'The cart: state that never leaves the browser', layers: ['R'], notes: '5.5, 5.6', focus: 'app',
+    start: { server: C.srv4, model: C.model, app: C.app7Start }, solution: { server: C.srv4, model: C.model, app: C.app7 },
+    why: `<p>Not every piece of state belongs in the database. The cart is <b>UI state</b>: it matters to this visitor, on this page, right now. It lives in React state and costs <b>no request</b>.</p>
+<p>Both <code>Header</code> (the badge) and <code>BookList</code> (the buttons) need the cart, so it lives in their closest common parent, <code>App</code>: <b>lifting state up</b> (topic 5.6). Data flows down as props (<code>cartCount</code>); events flow up as callbacks (<code>onAdd</code>).</p>
+<p>A design question for the class: when would the cart have to move into MongoDB? (When it must survive a refresh, or follow a student from laptop to phone. Then it needs a <code>carts</code> collection, routes, and a way to know who the user is.)</p>`,
+    trace: [
+      ['ui', 'A student clicks "Add to cart" in one BookCard.'],
+      ['ui', 'BookCard calls onAdd(book), the function App passed down through BookList.'],
+      ['state', 'App calls setCart([...cart, book]): a new array, never a mutation.'],
+      ['ui', 'React re-renders; Header receives the new cartCount and the badge updates. No HTTP, no server, no database.']
+    ],
+    predict: { q: 'How many network requests does "Add to cart" send?', a: 'Zero. The click changes React state only. Check the Network tab: the only request is still the one from page load.' },
+    task: `<ol><li>In App: <code>const [cart, setCart] = useState([])</code> and a function <code>addToCart(book)</code> that calls <code>setCart([...cart, book])</code>.</li><li>Pass <code>onAdd={addToCart}</code> to BookList, and from BookList to each BookCard. In BookCard: <code>onClick={() =&gt; onAdd(book)}</code>.</li><li>Pass <code>cartCount={cart.length}</code> to Header.</li></ol>`,
+    checks: [
+      { label: 'The cart is state in App (lifted up)', hint: 'const [cart, setCart] = useState([]) inside App.', run: async x => /\[\s*cart\s*,\s*setCart\s*\]\s*=\s*useState/.test(noComments(x.src('app'))) },
+      { label: 'Adding two books makes the badge show 2', hint: 'Header must show {cartCount}, and App must pass cartCount={cart.length}.', run: async x => { if (!(await x.until(d => cards(d) >= 1, 5000))) return false; await x.click('Add to cart', 0); await x.wait(150); await x.click('Add to cart', 1); return x.until(d => /2/.test((d.querySelector('.badge') || {}).textContent || '')); } },
+      { label: 'Adding to the cart sends no request', hint: 'addToCart should only call setCart; no fetch is needed.', run: async x => { const before = x.state.net.length; await x.click('Add to cart', 0); await x.wait(700); return x.state.net.length === before; } }
+    ]
+  },
+  {
+    n: 8, session: 2, short: 'Sell a book', title: 'Sell a book: the full write path', layers: ['R', 'E', 'M'], notes: '3.8, 6.6, 6.7', focus: 'app',
+    start: { server: C.srv4, model: C.model, app: C.app8Start }, solution: FINAL,
+    why: `<p>This is the write path through every layer, and it shows why the rules live on the server:</p>
+<ul>
+<li><b>React</b> collects what the user typed, in controlled inputs (topic 6.6), and sends it. It does not decide whether the book is valid.</li>
+<li><b>Express and Mongoose</b> decide (step 4): 201 with the saved document, or 400 with the reason.</li>
+<li><b>React shows the outcome:</b> the server's error message, or the new card.</li>
+</ul>
+<p>After a 201, add the book <em>the server sent back</em>, not the form values. The server is the <b>source of truth</b>: its copy has the new <code>_id</code> (React needs it as the key), the defaults (condition "good"), and it proves the book was really saved.</p>`,
+    trace: [
+      ['state', 'Each keystroke updates title, price and category state: controlled inputs.'],
+      ['ui', 'Submit: handleSubmit calls e.preventDefault(), so the page does not reload (it is a single-page app).'],
+      ['http', 'POST /api/books with Content-Type: application/json and the book as JSON.'],
+      ['route', 'express.json() fills req.body; the POST route runs.'],
+      ['model', 'Book.create validates: no title means a ValidationError.'],
+      ['db', 'Valid: MongoDB stores it with a new _id.'],
+      ['http', '201 and the saved document, or 400 and { error }, travel back.'],
+      ['state', 'React branches on res.ok: setBooks([...books, data]) or setError(data.error).'],
+      ['ui', 'Re-render: a new card, or the server\'s message under the form.']
+    ],
+    predict: { q: 'You forget the Content-Type header in fetch. What happens when you publish a valid book?', a: '400 "title is required". Without <code>Content-Type: application/json</code>, express.json() skips the body, so req.body is empty. It is the same bug as forgetting express.json() in step 4, seen from the other side of the HTTP request.' },
+    task: `<ol><li>Write <code>SellForm</code> with controlled inputs: placeholders <code>Title</code> and <code>Price (EGP)</code>, a category select, and a <b>Publish</b> button.</li><li>On submit: <code>e.preventDefault()</code>, then POST JSON to <code>/api/books</code> with the Content-Type header.</li><li>If <code>res.ok</code>, call <code>onCreated(data)</code> (App adds it to books); otherwise show <code>data.error</code> in <code>&lt;p className="error"&gt;</code>.</li></ol>`,
+    checks: [
+      { label: 'A form with Title and Price inputs', hint: 'Use placeholder="Title" and placeholder="Price (EGP)" on the inputs.', run: async x => x.until(d => d.querySelector('input[placeholder^="Title" i]') && d.querySelector('input[placeholder^="Price" i]'), 5000) },
+      { label: 'Publishing without a title shows the server\'s error', hint: 'If !res.ok, setError(data.error) and render it in <p className="error">.', run: async x => { await x.fill('input[placeholder^="Title" i]', ''); await x.fill('input[placeholder^="Price" i]', '40'); await x.click('Publish'); return x.until(d => /required/i.test(d.body.textContent)); } },
+      { label: 'Publishing a valid book sends a POST and adds a 5th card', hint: 'POST with headers { \'Content-Type\': \'application/json\' }, then add the returned book to the books state.', run: async x => { await x.until(d => cards(d) === 4, 5000); await x.fill('input[placeholder^="Title" i]', 'Test Book'); await x.fill('input[placeholder^="Price" i]', '99'); await x.click('Publish'); const ok = await x.until(d => cards(d) === 5, 4000); return ok && x.state.net.some(n => n.method === 'POST' && n.status === 201); } }
+    ]
+  },
+  {
+    n: 9, session: 3, short: 'Take it home', title: 'Take it home: from the studio to your laptop', layers: ['R', 'E', 'N', 'M'], notes: '4.8, 5.1, 6.7', focus: 'server',
+    start: FINAL, solution: null,
+    why: `<p>The studio <b>simulates</b> two layers so everything fits in one browser tab: Express and MongoDB cannot run inside a web page. Your code, however, is real. Here is what changes on your laptop:</p>
+<ul>
+<li><b>Node.js</b> really runs <code>server.js</code> (<code>node server.js</code> or <code>nodemon</code>, topic 3.5), on port 3000.</li>
+<li><b>MongoDB Atlas</b> replaces the simulated database. Your connection string goes in <code>server/.env</code> as <code>MONGODB_URI</code>, and is never committed or sent to the browser: rule 1 of the MERN model.</li>
+<li><b>Vite</b> serves React on port 5173. Its <b>proxy</b> forwards every <code>/api</code> request to port 3000, so <code>fetch('/api/books')</code> works unchanged.</li>
+</ul>
+<p>Download the project, then follow the README inside it.</p>`,
+    trace: [
+      ['ui', 'Vite serves your React app at localhost:5173.'],
+      ['http', 'fetch(\'/api/books\') goes to Vite, whose proxy forwards it to localhost:3000.'],
+      ['route', 'Node.js runs your real Express server.'],
+      ['model', 'Mongoose connects with the MONGODB_URI from .env…'],
+      ['db', '…to your cluster on MongoDB Atlas, in the cloud.']
+    ],
+    predict: { q: 'Why does the React app call /api/books and not mongodb+srv://… directly?', a: 'Because the browser must never hold the database password, and because the server is where the rules are enforced. The browser talks only to your API; your API talks to the database.' },
+    task: `<ol><li>Press <b>Download project</b>. You get <code>server/</code> and <code>client/</code> folders with your code from step 8 (or the class checkpoint), and a README.</li><li>Follow the README: <code>npm install</code> in both folders, put your Atlas string in <code>server/.env</code>, start both.</li><li>Extend it: a Delete button (<code>DELETE /api/books/:id</code> with <code>Book.findByIdAndDelete</code>), or a category filter in React.</li></ol>`,
+    checks: []
+  }
+];
+
+/* ===================== utilities ===================== */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v; else if (k === 'html') e.innerHTML = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else if (v === true) e.setAttribute(k, ''); else e.setAttribute(k, v);
+  }
+  for (const c of kids.flat()) { if (c == null || c === false) continue; e.append(c.nodeType ? c : document.createTextNode(c)); }
+  return e;
+}
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const clone = o => JSON.parse(JSON.stringify(o));
+const FILES = { server: 'server.js', model: 'models/Book.js', app: 'src/App.jsx' };
+const LIBS = [
+  'https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.development.js',
+  'https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.development.js',
+  'https://cdn.jsdelivr.net/npm/@babel/standalone@7.24.7/babel.min.js'
+];
+const JSZIP = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+const LAYER_NAME = { R: 'React', E: 'Express', N: 'Node.js', M: 'MongoDB' };
+
+/* ===================== saved state ===================== */
+const KEY = 'kitabswap-studio-v1';
+let S = (() => { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { return null; } })() || {};
+S = Object.assign({ step: 0, files: {}, done: {}, tab: null, follow: true, stuck: false, seenCodeAt: 0, lead: false }, S);
+if (!STEPS[S.step]) S.step = 0;
+let saveT;
+const save = () => { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }, 250); };
+const filesFor = n => (S.files[n] = S.files[n] || clone(STEPS[n].start));
+const cur = () => STEPS[S.step];
+
+/* ===================== layout ===================== */
+const app = $('#app');
+const stepper = h('nav', { class: 'stepper', 'aria-label': 'Build steps' });
+const guide = h('section', { class: 'guide', 'aria-label': 'Step guide' });
+const banner = h('div', { class: 'banner', hidden: true, role: 'status' });
+const tabsEl = h('div', { class: 'tabs', role: 'tablist', 'aria-label': 'Files' });
+const ed = h('textarea', { class: 'ed', spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off', 'aria-label': 'Code editor' });
+const gutter = h('div', { class: 'gutter', 'aria-hidden': 'true' });
+const frameWrap = h('div', { style: 'position:relative;flex:1;display:flex;flex-direction:column' });
+const fatalEl = h('div', { class: 'fatal', hidden: true, role: 'alert' });
+const statEl = h('span', { class: 'stat' }, '');
+const pBody = h('div', { class: 'pbody' });
+const pTabs = {};
+let frame = null;
+
+const classPill = h('button', { class: 'pill', type: 'button', onclick: () => { const c = $('#classcard'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, h('span', { class: 'dot' }), 'Working in this browser');
+const themeBtn = h('button', { class: 'pill', type: 'button', onclick: () => { const r = document.documentElement, t = r.getAttribute('data-theme'); const dark = t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; r.setAttribute('data-theme', dark ? 'light' : 'dark'); } }, 'Light or dark');
+
+app.append(
+  h('header', { class: 'top' },
+    h('div', { class: 'brand' }, h('b', {}, 'KitabSwap Build Studio'), h('span', {}, 'BINF 602 Electronic Business Development, German International University'), h('span', { class: 'flag', 'aria-hidden': 'true' })),
+    classPill, themeBtn),
+  stepper,
+  h('div', { class: 'layout' },
+    guide,
+    h('section', { class: 'work', 'aria-label': 'Workspace' },
+      banner,
+      h('div', { class: 'edhead' }, tabsEl, h('span', { class: 'spacer' }),
+        h('button', { class: 'btn primary', type: 'button', onclick: () => run(), title: 'Ctrl+Enter' }, '▶ Run'),
+        h('button', { class: 'btn', type: 'button', onclick: resetStep }, 'Start this step again'),
+        h('button', { class: 'btn', type: 'button', id: 'solBtn', onclick: showSolution }, 'Show the checkpoint')),
+      h('div', { class: 'edbox' }, gutter, ed),
+      h('div', { class: 'lower' },
+        h('div', { class: 'browser' }, h('div', { class: 'bar' }, h('i'), h('i'), h('i'), h('span', {}, 'localhost:5173'), statEl), fatalEl, frameWrap),
+        h('div', { class: 'panel' }, (() => {
+          const bar = h('div', { class: 'ptabs', role: 'tablist', 'aria-label': 'Developer tools' });
+          [['console', 'Console'], ['network', 'Network'], ['tester', 'Request tester']].forEach(([k, t]) => {
+            pTabs[k] = h('button', { role: 'tab', type: 'button', 'aria-selected': 'false', onclick: () => showPanel(k) }, t, h('span', { class: 'cnt' }));
+            bar.append(pTabs[k]);
+          });
+          return bar;
+        })(), pBody)))),
+  h('p', { class: 'foot' }, 'Express and MongoDB are simulated in your browser so the whole stack fits in one page. The code you write is real: step 9 downloads it as a project that runs with Node.js and MongoDB Atlas.'));
+
+/* ===================== MERN map ===================== */
+const NODES = {
+  ui: { x: 16, y: 48, w: 116, t: 'Components (UI)', d: 'Components', L: 'R' },
+  state: { x: 16, y: 128, w: 116, t: 'State', d: 'State', L: 'R' },
+  http: { x: 145, y: 88, w: 40, t: 'HTTP', d: 'HTTP', L: '' },
+  route: { x: 198, y: 48, w: 132, t: 'Express route', d: 'Express route', L: 'E' },
+  model: { x: 198, y: 128, w: 132, t: 'Mongoose model', d: 'Mongoose model', L: 'E' },
+  db: { x: 360, y: 88, w: 84, t: 'books collection', d: 'books', L: 'M' }
+};
+function mernSvg(st) {
+  const L = st.layers, on = k => L.includes(k);
+  const box = (k) => { const n = NODES[k]; const dim = n.L && !on(n.L) && !(n.L === 'E' && on('N')) ? ' dim' : ''; return `<g class="m-node ${n.L}${dim}" data-k="${k}"><rect x="${n.x}" y="${n.y}" width="${n.w}" height="40" rx="9"/><text x="${n.x + n.w / 2}" y="${n.y + 25}" text-anchor="middle" class="m-t${k === 'http' ? ' b sm' : ''}">${n.d}</text></g>`; };
+  return `<svg viewBox="0 0 460 228" role="img" aria-label="The MERN stack: React in the browser, Express and Mongoose on Node.js, MongoDB. Active in this step: ${L.map(x => LAYER_NAME[x]).join(', ')}">
+<defs><marker id="ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="m-arrow"/></marker></defs>
+<rect x="6" y="6" width="136" height="216" rx="12" class="m-panel${on('R') ? ' on' : ''}"/><text x="16" y="30" class="m-t h">Browser: React</text><text x="16" y="212" class="m-t s">presentation</text>
+<rect x="188" y="6" width="152" height="216" rx="12" class="m-panel${on('E') || on('N') ? ' on' : ''}"/><text x="198" y="30" class="m-t h">Server: Node.js</text><text x="198" y="212" class="m-t s">logic</text>
+<rect x="350" y="6" width="104" height="216" rx="12" class="m-panel${on('M') ? ' on' : ''}"/><text x="360" y="30" class="m-t h">MongoDB</text><text x="360" y="212" class="m-t s">data</text>
+<line x1="74" y1="90" x2="74" y2="126" class="m-line" marker-end="url(#ma)" marker-start="url(#ma)"/>
+<line x1="134" y1="108" x2="143" y2="108" class="m-line"/>
+<line x1="187" y1="100" x2="196" y2="80" class="m-line" marker-end="url(#ma)"/>
+<line x1="264" y1="90" x2="264" y2="126" class="m-line" marker-end="url(#ma)" marker-start="url(#ma)"/>
+<line x1="332" y1="146" x2="358" y2="118" class="m-line" marker-end="url(#ma)" marker-start="url(#ma)"/>
+<text x="165" y="146" text-anchor="middle" class="m-t s">JSON</text>
+<text x="402" y="146" text-anchor="middle" class="m-t s">collection</text>
+${Object.keys(NODES).map(box).join('')}
+</svg>`;
+}
+
+/* ===================== stepper + guide ===================== */
+function renderStepper() {
+  stepper.innerHTML = '';
+  let lastS = -1;
+  STEPS.forEach((st, i) => {
+    if (st.session !== lastS) { lastS = st.session; stepper.append(h('span', { class: 'grp' }, ['Start', 'Session 1: back end', 'Session 2: front end', 'Finish'][st.session])); }
+    const leadHere = LIVE && LIVE.step === i && !IS_LEAD;
+    stepper.append(h('button', { type: 'button', class: S.done[i] ? 'done' : '', 'aria-current': i === S.step ? 'step' : null, onclick: () => goStep(i, true), title: st.title },
+      h('span', { class: 'num' }, S.done[i] ? '✓' : String(i)), st.short, leadHere ? h('span', { class: 'lead' }, 'class') : null));
+  });
+}
+let traceI = -1, traceTimer = null, predictOpen = false;
+function renderGuide() {
+  const st = cur();
+  traceI = -1; clearInterval(traceTimer); predictOpen = false;
+  guide.innerHTML = '';
+  const map = h('div', { class: 'mapwrap', html: mernSvg(st) });
+  const narr = h('div', { class: 'narr', 'aria-live': 'polite' }, h('span', { class: 'stp' }, 'Trace'), 'Press Trace to follow the data through the layers in this step.');
+  const showTrace = i => {
+    traceI = i; const [k, t] = st.trace[i];
+    map.querySelectorAll('.m-node').forEach(g => g.classList.toggle('active', g.dataset.k === k));
+    narr.innerHTML = `<span class="stp">${i + 1} of ${st.trace.length}: ${esc(NODES[k].t)}</span>${esc(t)}`;
+  };
+  const playBtn = h('button', { class: 'btn', type: 'button', onclick: () => {
+    if (traceTimer) { clearInterval(traceTimer); traceTimer = null; playBtn.textContent = 'Play'; return; }
+    showTrace(0); playBtn.textContent = 'Pause';
+    traceTimer = setInterval(() => { if (traceI + 1 >= st.trace.length) { clearInterval(traceTimer); traceTimer = null; playBtn.textContent = 'Play'; return; } showTrace(traceI + 1); }, 2400);
+  } }, 'Play');
+  const revealBox = h('div', { class: 'reveal', hidden: true, html: st.predict.a });
+  const why = h('div', { class: 'why', html: st.why });
+  guide.append(
+    h('div', { class: 'card' },
+      h('div', { class: 'meta' }, h('span', {}, st.n === 0 ? 'Start here' : st.n === 9 ? 'Finish' : `Session ${st.session}, step ${st.n}`), ...st.layers.map(l => h('span', { class: 'lay ' + l }, h('i', {}, l), LAYER_NAME[l]))),
+      h('h2', {}, st.title),
+      st.intro ? h('p', { class: 'intro' }, st.intro) : null,
+      h('p', { class: 'notes' }, 'In the lecture notes: topics ' + st.notes)),
+    h('div', { class: 'card mern' },
+      h('h3', {}, 'The MERN logic of this step'),
+      why, map, narr,
+      h('div', { class: 'row', style: 'margin-top:8px' },
+        h('button', { class: 'btn primary', type: 'button', onclick: () => showTrace(Math.min(st.trace.length - 1, traceI + 1)) }, traceI < 0 ? 'Trace the request' : 'Next'),
+        h('button', { class: 'btn', type: 'button', onclick: () => showTrace(Math.max(0, traceI - 1)) }, 'Back'),
+        playBtn),
+      h('div', { class: 'predict' }, h('b', {}, 'Predict first'), h('span', { html: st.predict.q }),
+        h('div', { style: 'margin-top:8px' }, h('button', { class: 'btn', type: 'button', onclick: e => { revealBox.hidden = !revealBox.hidden; e.currentTarget.textContent = revealBox.hidden ? 'Show the answer' : 'Hide the answer'; } }, 'Show the answer')), revealBox)),
+    taskCard(st),
+    hintCard(st),
+    classCard());
+  // "Trace the request" button label switches to Next after first press
+  const first = guide.querySelector('.mern .row .btn.primary');
+  first.addEventListener('click', () => { first.textContent = 'Next'; });
+}
+
+let lastResults = null;
+function taskCard(st) {
+  const card = h('div', { class: 'card' }, h('h3', {}, st.checks.length ? 'Your task' : 'Try this'), h('div', { html: st.task }));
+  if (st.n > 0 && st.n < 9 && S.files[st.n - 1]) {
+    card.append(h('p', { class: 'sub', style: 'margin-top:4px' }, 'Each step starts from the class checkpoint so everyone begins together. ',
+      h('button', { class: 'btn', type: 'button', style: 'margin-top:6px', onclick: () => { if (confirm(`Replace the code in this step with your own code from step ${st.n - 1}?`)) { S.files[st.n] = clone(S.files[st.n - 1]); save(); loadEditor(); run(); } } }, `Use my own code from step ${st.n - 1}`)));
+  }
+  if (st.n === 9) {
+    const msg = h('p', { class: 'sub', 'aria-live': 'polite', style: 'margin:8px 0 0' });
+    card.append(h('div', { class: 'row', style: 'margin-top:6px' },
+      h('button', { class: 'btn gold', type: 'button', onclick: () => downloadProject(8, msg) }, 'Download project (my step 8 code)'),
+      h('button', { class: 'btn', type: 'button', onclick: () => downloadProject(-1, msg) }, 'Download the class checkpoint')), msg);
+  }
+  if (st.checks.length) {
+    const list = h('ul', { class: 'checks' });
+    const drawList = res => {
+      list.innerHTML = '';
+      st.checks.forEach((c, i) => {
+        const r = res ? res[i] : null;
+        list.append(h('li', { class: r === true ? 'ok' : r === false ? 'no' : r === 'run' ? 'run' : '' }, h('span', { class: 'mk', 'aria-hidden': 'true' }, r === true ? '✓' : r === false ? '✕' : r === 'run' ? '…' : '○'),
+          h('span', {}, c.label, r === false ? h('span', { class: 'hint' }, c.hint) : null)));
+      });
+    };
+    const done = h('div', { class: 'complete', hidden: !S.done[st.n] }, 'Step complete. ', st.n < 8 ? 'Move on when your instructor does.' : 'You have built the whole stack. Step 9 takes it home.');
+    const btn = h('button', { class: 'btn primary', type: 'button', onclick: async () => {
+      btn.disabled = true; btn.textContent = 'Checking…';
+      const res = await runChecks(st, partial => drawList(partial));
+      lastResults = res; drawList(res);
+      if (res.every(x => x === true)) { S.done[st.n] = true; save(); renderStepper(); done.hidden = false; updatePresence(); }
+      btn.disabled = false; btn.textContent = 'Check my work';
+    } }, 'Check my work');
+    drawList(null);
+    card.append(h('div', { class: 'row', style: 'margin-top:10px' }, btn, h('span', { class: 'sub' }, 'Runs your code fresh, then tests it.')), list, done);
+  }
+  return card;
+}
+
+/* ===================== editor ===================== */
+function renderTabs() {
+  tabsEl.innerHTML = '';
+  const f = filesFor(S.step), start = cur().start;
+  Object.entries(FILES).forEach(([k, name]) => {
+    tabsEl.append(h('button', { role: 'tab', type: 'button', 'aria-selected': String(S.tab === k), onclick: () => { S.tab = k; save(); loadEditor(); } }, name, f[k] !== start[k] ? h('span', { class: 'ch', title: 'Changed in this step' }) : null));
+  });
+}
+function loadEditor() {
+  if (!S.tab) S.tab = cur().focus;
+  ed.value = filesFor(S.step)[S.tab];
+  drawGutter(); renderTabs();
+  $('#solBtn').hidden = !cur().solution;
+}
+function drawGutter() { const n = ed.value.split('\n').length; let s = ''; for (let i = 1; i <= n; i++) s += i + '\n'; gutter.textContent = s; gutter.scrollTop = ed.scrollTop; }
+let tabsT;
+ed.addEventListener('input', () => { filesFor(S.step)[S.tab] = ed.value; save(); drawGutter(); clearTimeout(tabsT); tabsT = setTimeout(renderTabs, 400); });
+ed.addEventListener('scroll', () => { gutter.scrollTop = ed.scrollTop; });
+ed.addEventListener('keydown', e => {
+  if (e.key === 'Tab' && !e.shiftKey) { e.preventDefault(); ed.setRangeText('  ', ed.selectionStart, ed.selectionEnd, 'end'); ed.dispatchEvent(new Event('input')); }
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); run(); }
+});
+function resetStep() {
+  if (!confirm('Start this step again from the class checkpoint? Your changes in this step will be replaced.')) return;
+  S.files[S.step] = clone(cur().start); save(); loadEditor(); run();
+}
+function showSolution() {
+  if (!cur().solution) return;
+  if (!confirm('Load the finished code for this step? Your changes in this step will be replaced.')) return;
+  S.files[S.step] = clone(cur().solution); save(); loadEditor(); run();
+}
+
+/* ===================== runner ===================== */
+const RUN = { id: 0, ready: false, listening: false, html: '', net: [], logs: [] };
+let pending = {}, reqSeq = 0, bootTimer = null, readyWaiters = [];
+const RUNNER_SRC = $('#runner-src').textContent;
+const APP_CSS = $('#app-css').textContent;
+function run(files) {
+  files = files || filesFor(S.step);
+  RUN.id++; RUN.ready = false; RUN.listening = false; RUN.html = ''; RUN.net = []; RUN.logs = []; pending = {};
+  fatalEl.hidden = true; statEl.textContent = 'starting…';
+  renderPanel(); updateCounts();
+  if (frame) frame.remove();
+  frame = h('iframe', { title: 'KitabSwap preview', sandbox: 'allow-scripts allow-forms allow-modals' });
+  frameWrap.append(frame);
+  const payload = JSON.stringify(files).replace(/</g, '\\u003c');
+  frame.srcdoc = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fraunces:opsz,wght@9..144,800&display=swap" rel="stylesheet"><style>${APP_CSS}</style>${LIBS.map(u => `<script src="${u}"><\/script>`).join('')}</head><body><div id="root"></div><script>window.__STUDIO_ID=${RUN.id};window.__FILES=${payload};<\/script><script>${RUNNER_SRC.replace(/<\/script/gi, '<\\/script')}<\/script></body></html>`;
+  clearTimeout(bootTimer);
+  const id = RUN.id;
+  bootTimer = setTimeout(() => {
+    if (RUN.id === id && !RUN.ready) {
+      fatalEl.hidden = false;
+      fatalEl.textContent = 'The code runner did not start. It loads React and Babel from the internet, so check your connection and press Run. If it keeps happening, reload the page or try another browser.';
+      statEl.textContent = 'not running';
+    }
+  }, 15000);
+}
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (!d || d.__studio !== RUN.id || !frame || e.source !== frame.contentWindow) return;
+  if (d.t === 'log') { RUN.logs.push(d); if (RUN.logs.length > 400) RUN.logs.shift(); if (curPanel === 'console') appendLog(d); updateCounts(); }
+  else if (d.t === 'net') { RUN.net.push(d); if (curPanel === 'network') renderPanel(); updateCounts(); }
+  else if (d.t === 'dom') { RUN.html = d.html; }
+  else if (d.t === 'ready') {
+    RUN.ready = true; RUN.listening = d.listening; clearTimeout(bootTimer);
+    statEl.textContent = d.listening ? 'API on :3000' : 'API not listening';
+    readyWaiters.splice(0).forEach(f => f());
+  } else if (d.t === 'fatal') { fatalEl.hidden = false; fatalEl.textContent = d.text; statEl.textContent = 'not running'; clearTimeout(bootTimer); }
+  else if (d.t === 'reply') { const p = pending[d.id]; if (p) { delete pending[d.id]; p(d); } }
+});
+const waitReady = (ms = 15000) => RUN.ready ? Promise.resolve(true) : new Promise(res => { const t = setTimeout(() => res(false), ms); readyWaiters.push(() => { clearTimeout(t); res(true); }); });
+function sbx(msg, ms = 8000) {
+  return new Promise(res => {
+    const id = ++reqSeq; const t = setTimeout(() => { delete pending[id]; res({ timeout: true }); }, ms);
+    pending[id] = d => { clearTimeout(t); res(d); };
+    frame.contentWindow.postMessage(Object.assign({ __studio: RUN.id, id }, msg), '*');
+  });
+}
+async function apiCall(method, url, body) {
+  const r = await sbx({ t: 'req', method, url, body: body == null ? null : typeof body === 'string' ? body : JSON.stringify(body) });
+  let json = null; try { json = JSON.parse(r.body); } catch (e) {}
+  return Object.assign(r, { json });
+}
+
+/* ===================== checks ===================== */
+async function runChecks(st, onProgress) {
+  const res = st.checks.map(() => null);
+  run();
+  const ok = await waitReady();
+  if (!ok) return res.map(() => false);
+  await wait(350);
+  let mt = null;
+  const parse = () => new DOMParser().parseFromString('<body>' + RUN.html + '</body>', 'text/html');
+  const x = {
+    state: RUN, src: k => filesFor(S.step)[k], wait,
+    api: apiCall,
+    modeltest: async () => { if (!mt) { const r = await sbx({ t: 'probe', kind: 'modeltest' }); mt = r.result || {}; } return mt; },
+    until: async (fn, ms = 3000) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { try { if (fn(parse())) return true; } catch (e) {} await wait(150); } try { return !!fn(parse()); } catch (e) { return false; } },
+    click: async (text, index) => { const r = await sbx({ t: 'probe', kind: 'click', text, index: index || 0 }); await wait(80); return r.ok; },
+    fill: async (selector, value) => { const r = await sbx({ t: 'probe', kind: 'fill', selector, value }); await wait(40); return r.ok; }
+  };
+  for (let i = 0; i < st.checks.length; i++) {
+    res[i] = 'run'; onProgress(res.slice());
+    let v = false;
+    try { v = !!(await Promise.race([st.checks[i].run(x), wait(12000).then(() => false)])); } catch (e) { v = false; }
+    res[i] = v; onProgress(res.slice());
+  }
+  return res;
+}
+
+/* ===================== dev panel ===================== */
+let curPanel = 'console';
+function showPanel(k) { curPanel = k; Object.entries(pTabs).forEach(([n, b]) => b.setAttribute('aria-selected', String(n === k))); renderPanel(); }
+function updateCounts() {
+  const errs = RUN.logs.filter(l => l.lvl === 'error').length;
+  pTabs.console.querySelector('.cnt').textContent = RUN.logs.length ? `(${RUN.logs.length}${errs ? `, ${errs} error${errs > 1 ? 's' : ''}` : ''})` : '';
+  pTabs.network.querySelector('.cnt').textContent = RUN.net.length ? `(${RUN.net.length})` : '';
+}
+let logBox = null;
+function appendLog(l) {
+  if (!logBox) return;
+  const em = logBox.querySelector('.empty'); if (em) em.remove();
+  logBox.append(h('div', { class: 'ln' }, h('span', { class: 'src ' + l.src }, l.src), h('span', { class: l.lvl }, l.text)));
+  pBody.scrollTop = pBody.scrollHeight;
+}
+const codeCls = s => 'code c' + (s === 0 ? '0' : String(s)[0]);
+let testerState = { method: 'GET', url: '/api/books', body: '{\n  "title": "Intro to Marketing",\n  "price": 120,\n  "category": "Business"\n}' };
+function renderPanel() {
+  pBody.innerHTML = ''; logBox = null;
+  if (curPanel === 'console') {
+    logBox = h('div', { class: 'log', role: 'log', 'aria-live': 'polite' });
+    if (!RUN.logs.length) logBox.append(h('div', { class: 'empty' }, 'Messages from console.log appear here, labelled server or browser, so you can see which side of MERN printed them.'));
+    pBody.append(logBox); RUN.logs.forEach(appendLog);
+  } else if (curPanel === 'network') {
+    const box = h('div', { class: 'net' });
+    if (!RUN.net.length) box.append(h('div', { class: 'empty' }, 'Every HTTP request between React (or the Request tester) and your Express server appears here.'));
+    RUN.net.forEach(n => box.append(h('details', {},
+      h('summary', {}, h('b', {}, n.method), h('span', {}, n.url, ' ', h('small', {}, n.src === 'tester' ? 'from the tester' : 'from React')), h('span', { class: codeCls(n.status) }, n.status || 'failed'), h('small', {}, n.ms + ' ms')),
+      h('pre', {}, (n.reqBody ? 'Request body:\n' + n.reqBody + '\n\n' : '') + (n.error ? n.error : 'Response:\n' + prettyBody(n.resBody))))));
+    pBody.append(box);
+  } else {
+    const m = h('select', { 'aria-label': 'Method' }, ['GET', 'POST', 'PUT', 'DELETE'].map(x => h('option', { selected: x === testerState.method ? true : null }, x)));
+    const u = h('input', { type: 'text', 'aria-label': 'URL', value: testerState.url, class: 'mono' });
+    const b = h('textarea', { 'aria-label': 'JSON body', spellcheck: 'false' }); b.value = testerState.body;
+    const bodyWrap = h('div', { hidden: !['POST', 'PUT'].includes(testerState.method) }, h('span', { class: 'sub' }, 'Body (JSON)'), b);
+    const out = h('div', { class: 'resp', 'aria-live': 'polite' }, 'The response appears here.');
+    const send = async () => {
+      testerState = { method: m.value, url: u.value.trim() || '/', body: b.value };
+      if (!RUN.ready) { out.textContent = 'The server is still starting. Press Run, then try again.'; return; }
+      if (!testerState.url.startsWith('/')) { out.textContent = 'Use a path that starts with /, for example /api/books.'; return; }
+      out.textContent = 'Sending…';
+      const r = await apiCall(testerState.method, testerState.url, ['POST', 'PUT'].includes(testerState.method) ? testerState.body : null);
+      if (r.timeout) { out.textContent = 'No answer from the studio. Press Run and try again.'; return; }
+      out.innerHTML = r.status ? `<span class="${codeCls(r.status)}">${r.status}</span>\n\n` + esc(prettyBody(r.body)) : '<span class="code c0">no response</span>\n\n' + esc(r.error || '');
+    };
+    m.addEventListener('change', () => { testerState.method = m.value; bodyWrap.hidden = !['POST', 'PUT'].includes(m.value); });
+    u.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+    const preset = (meth, url, body) => h('button', { type: 'button', onclick: () => { m.value = meth; u.value = url; if (body) b.value = body; m.dispatchEvent(new Event('change')); send(); } }, meth + ' ' + url + (body ? ' (no title)' : ''));
+    pBody.append(h('div', { class: 'tester' },
+      h('div', { class: 'req' }, m, u, h('button', { class: 'btn primary', type: 'button', onclick: send }, 'Send')),
+      bodyWrap,
+      h('div', { class: 'presets' }, preset('GET', '/api/books'), preset('GET', '/api/books?category=Databases'), preset('POST', '/api/books', '{\n  "price": 50\n}')),
+      out));
+  }
+}
+function prettyBody(b) { try { return JSON.stringify(JSON.parse(b), null, 2); } catch (e) { return b == null ? '' : String(b); } }
+
+/* ===================== navigation ===================== */
+function goStep(n, byUser) {
+  if (!STEPS[n]) return;
+  if (byUser && IS_LEAD && S.lead) writeLive({ step: n });
+  S.step = n; S.tab = cur().focus; save();
+  renderStepper(); renderGuide(); loadEditor(); run(); updatePresence();
+  window.scrollTo({ top: 0 });
+}
+
+/* ===================== hints from Claude ===================== */
+let hintCtl = null;
+function hintCard(st) {
+  const card = h('div', { class: 'card', id: 'hintcard' }, h('h3', {}, 'Stuck?'));
+  if (!CAP.sample) {
+    card.append(h('ol', { class: 'sub', style: 'margin:0;padding-left:1.2em' },
+      h('li', {}, 'Press Check my work and read the hint under each red check.'),
+      h('li', {}, 'Open the Console tab: an error message usually names the file and the problem.'),
+      h('li', {}, 'Play the MERN trace above and ask: which layer is my bug in?'),
+      h('li', {}, 'Still stuck? Raise your hand, or press Show the checkpoint to catch up.')));
+    return card;
+  }
+  const q = h('input', { type: 'text', 'aria-label': 'Your question (optional)', placeholder: 'Your question (optional)', style: 'width:100%' });
+  const out = h('div', { class: 'hintbox', 'aria-live': 'polite' });
+  const btn = h('button', { class: 'btn gold', type: 'button', onclick: () => askHint(st, q.value, out, btn) }, 'Ask Claude for a hint');
+  card.append(h('p', { class: 'sub' }, 'Claude sees your code, the checks and the console, and answers with a hint and a question, not the solution.'), q, h('div', { class: 'row', style: 'margin-top:8px' }, btn), out);
+  return card;
+}
+async function askHint(st, question, out, btn) {
+  if (hintCtl) hintCtl.abort();
+  const ctl = hintCtl = new AbortController();
+  btn.disabled = true; out.textContent = 'Thinking…';
+  const f = filesFor(S.step);
+  const failing = lastResults ? st.checks.filter((c, i) => lastResults[i] === false).map(c => c.label).join('; ') : '';
+  const errs = RUN.logs.filter(l => l.lvl !== 'log').slice(-6).map(l => `[${l.src}] ${l.text}`).join('\n');
+  const trim = s => s.length > 7000 ? s.slice(0, 7000) + '\n…(cut)' : s;
+  const prompt = `You are a friendly teaching assistant for BINF 602 Electronic Business Development at the German International University. A student is building KitabSwap, a one-page MERN app (second-hand textbooks), in a browser studio. React 18 runs for real; Express 5 and Mongoose are simulated faithfully in the browser.
+
+Give ONE hint for the current step. Rules:
+- At most 90 words, plain text. You may put code names in \`backticks\`.
+- Do not give the solution. Write at most one short line of code, and only if the student is stuck on syntax.
+- Say which file and roughly where to look, name the MERN layer involved (React, Express on Node.js, Mongoose or MongoDB), and end with one guiding question.
+- If the code already looks right, say so and suggest pressing Run and Check my work.
+
+Step ${st.n}: ${st.title}
+Task: ${st.task.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()}
+Checks still failing: ${failing || (lastResults ? 'none' : 'not run yet')}
+Recent console warnings and errors:
+${errs || 'none'}
+${question ? 'The student asks: ' + question : ''}
+
+--- server.js ---
+${trim(f.server)}
+--- models/Book.js ---
+${trim(f.model)}
+--- src/App.jsx ---
+${trim(f.app)}`;
+  const render = t => { out.innerHTML = esc(t).replace(/`([^`\n]+)`/g, '<code>$1</code>'); };
+  try {
+    const r = await CAP.sample(prompt, { signal: ctl.signal, cache: false, onText: ({ text }) => render(text) });
+    render(r.text + (r.truncated ? '\n(The hint was cut short.)' : ''));
+  } catch (e) {
+    if (e && e.code === 'cancelled') return;
+    out.textContent = e && e.code === 'not_granted' ? 'Hints need your permission to ask Claude. You can allow it from this page\'s permissions.' : e && e.code === 'rate_limited' ? 'Too many hints in a short time. Wait a minute and try again.' : 'Claude could not answer right now. Try again in a moment.';
+  } finally { if (hintCtl === ctl) btn.disabled = false; }
+}
+
+/* ===================== class features ===================== */
+const CAP = { sample: null, room: null, user: null, db: null, downloads: null, checked: false };
+let IS_LEAD = false, LIVE = null, ME = null, PEERS = [];
+async function initCaps() {
+  if (!window.claude || typeof window.claude.use !== 'function') return;
+  const use = n => window.claude.use(n).catch(() => null);
+  const [sample, user, room, db, downloads] = await Promise.all([use('sample'), use('user'), use('room'), use('db'), use('downloads')]);
+  Object.assign(CAP, { sample, user, room, db, downloads, checked: true });
+  if (user) { try { IS_LEAD = await user.canEdit(); ME = await user.id(); } catch (e) {} }
+  if (db) {
+    let first = true;
+    db.doc('live/state').onSnapshot(snap => {
+      LIVE = snap.exists ? snap.data() : null;
+      if (LIVE && !IS_LEAD) {
+        if (S.follow && typeof LIVE.step === 'number' && LIVE.step !== S.step && STEPS[LIVE.step]) goStep(LIVE.step, false);
+        if (LIVE.codeAt && LIVE.codeAt !== S.seenCodeAt && STEPS[LIVE.codeStep]) showCodeBanner();
+      }
+      if (first) first = false;
+      renderStepper(); refreshClassCard();
+    }, () => {});
+  }
+  if (room) {
+    room.on('lead', m => { if (!IS_LEAD && S.follow && m.data && STEPS[m.data.step] && m.data.step !== S.step) goStep(m.data.step, false); }, () => {});
+    room.onPeers(ch => { PEERS = ch.peers; renderBoard(); }, () => {});
+    room.onConnection(c => { setPill(); }, () => {});
+    updatePresence();
+  }
+  setPill(); renderGuide();
+}
+function setPill() {
+  const live = CAP.room && CAP.room.connected();
+  classPill.classList.toggle('on', !!live);
+  classPill.lastChild.textContent = !CAP.checked ? 'Working in this browser' : IS_LEAD ? (S.lead ? 'Leading the class' : 'Instructor view') : live ? (S.follow ? 'Following the class' : 'Connected to the class') : 'Working in this browser';
+}
+function updatePresence() {
+  if (!CAP.room) return;
+  const done = Object.keys(S.done).filter(k => S.done[k]).map(Number);
+  CAP.room.presence({ step: S.step, done, stuck: !!S.stuck, lead: IS_LEAD && S.lead ? true : null, uid: ME }).catch(() => {});
+}
+function writeLive(patch) {
+  LIVE = Object.assign({}, LIVE || {}, patch, { ts: Date.now() });
+  if (CAP.db) CAP.db.doc('live/state').set(LIVE).catch(() => {});
+  if (CAP.room && 'step' in patch) CAP.room.emit('lead', { step: patch.step }).catch(() => {});
+}
+function showCodeBanner() {
+  banner.hidden = false; banner.innerHTML = '';
+  banner.append(h('span', {}, `Your instructor shared their code for step ${LIVE.codeStep}.`),
+    h('button', { class: 'btn primary', type: 'button', onclick: () => {
+      if (!confirm('Load the instructor\'s code? It replaces your code in step ' + LIVE.codeStep + '.')) return;
+      S.files[LIVE.codeStep] = clone(LIVE.code); S.seenCodeAt = LIVE.codeAt; save(); banner.hidden = true;
+      if (S.step !== LIVE.codeStep) goStep(LIVE.codeStep, false); else { loadEditor(); run(); }
+    } }, 'Load it'),
+    h('button', { class: 'btn', type: 'button', onclick: () => { S.seenCodeAt = LIVE.codeAt; save(); banner.hidden = true; } }, 'Dismiss'));
+}
+let boardEl = null;
+function classCard() {
+  const card = h('div', { class: 'card', id: 'classcard' }, h('h3', {}, 'Class'));
+  if (!CAP.room && !CAP.db) {
+    card.append(h('p', { class: 'sub' }, 'Follow your instructor on the projector and open the same step here. Your work is saved in this browser, step by step, so you can close the tab and come back later on the same computer.'));
+    return card;
+  }
+  if (IS_LEAD) {
+    const lead = h('input', { type: 'checkbox', checked: S.lead ? true : null, onchange: e => { S.lead = e.target.checked; save(); setPill(); updatePresence(); if (S.lead) writeLive({ step: S.step }); } });
+    const pushMsg = h('span', { class: 'sub', 'aria-live': 'polite' });
+    card.append(
+      h('label', { class: 'toggle' }, lead, h('span', {}, h('b', {}, 'Lead the class. '), 'Students who follow you move to whichever step you open.')),
+      h('div', { class: 'row', style: 'margin:6px 0' },
+        h('button', { class: 'btn', type: 'button', disabled: !CAP.db, onclick: () => { writeLive({ codeStep: S.step, code: clone(filesFor(S.step)), codeAt: Date.now() }); pushMsg.textContent = `Sent your step ${S.step} code. Students see a "Load it" banner.`; } }, 'Send my code to the class'), pushMsg),
+      h('h3', { style: 'margin-top:10px' }, 'Progress board'));
+    boardEl = h('div', { class: 'board', 'aria-live': 'polite' });
+    card.append(boardEl); renderBoard();
+  } else {
+    const follow = h('input', { type: 'checkbox', checked: S.follow ? true : null, onchange: e => { S.follow = e.target.checked; save(); setPill(); if (S.follow && LIVE && STEPS[LIVE.step] && LIVE.step !== S.step) goStep(LIVE.step, false); } });
+    const stuck = h('input', { type: 'checkbox', checked: S.stuck ? true : null, onchange: e => { S.stuck = e.target.checked; save(); updatePresence(); } });
+    card.append(
+      h('label', { class: 'toggle' }, follow, h('span', {}, h('b', {}, 'Follow my instructor. '), 'Your screen moves to the step your instructor is on.')),
+      h('label', { class: 'toggle' }, stuck, h('span', {}, h('b', {}, 'I\'m stuck. '), 'Shows a flag on your instructor\'s progress board.')),
+      h('p', { class: 'sub', id: 'leadinfo', style: 'margin:6px 0 0' }, LIVE && STEPS[LIVE.step] ? `Your instructor is on step ${LIVE.step}: ${STEPS[LIVE.step].short}.` : 'Your instructor has not started leading yet.'));
+  }
+  return card;
+}
+function refreshClassCard() { const i = $('#leadinfo'); if (i) i.textContent = LIVE && STEPS[LIVE.step] ? `Your instructor is on step ${LIVE.step}: ${STEPS[LIVE.step].short}.` : 'Your instructor has not started leading yet.'; }
+async function renderBoard() {
+  if (!boardEl || !IS_LEAD) return;
+  const ppl = PEERS.filter(p => p.kind === 'viewer' && !p.isMe && !(p.presence && p.presence.lead));
+  if (!ppl.length) { boardEl.innerHTML = ''; boardEl.append(h('p', { class: 'sub' }, 'No students connected yet. Share the link and ask them to open it.')); return; }
+  const ids = [...new Set(ppl.map(p => p.by || (p.presence && p.presence.uid)).filter(Boolean))];
+  let prof = {};
+  try { if (CAP.user && ids.length) prof = await CAP.user.profiles(ids); } catch (e) {}
+  const here = ppl.filter(p => p.presence && p.presence.step === S.step).length;
+  const doneHere = ppl.filter(p => p.presence && Array.isArray(p.presence.done) && p.presence.done.includes(S.step)).length;
+  const stuckN = ppl.filter(p => p.presence && p.presence.stuck).length;
+  boardEl.innerHTML = '';
+  boardEl.append(h('p', { class: 'sub', style: 'margin:0 0 4px' }, `${ppl.length} connected. ${here} on step ${S.step}, ${doneHere} finished it${stuckN ? `, ${stuckN} stuck` : ''}.`));
+  ppl.slice().sort((a, b) => (b.presence.stuck ? 1 : 0) - (a.presence.stuck ? 1 : 0)).forEach(p => {
+    const id = p.by || (p.presence && p.presence.uid), pr = id ? prof[id] : null, pres = p.presence || {};
+    const nm = h('span', {}); nm.textContent = (pr && pr.name) || 'A student';
+    boardEl.append(h('div', { class: 'who' + (pres.stuck ? ' stuck' : '') },
+      pr ? h('img', { src: pr.avatarUrl, alt: '' }) : h('span', {}),
+      h('span', {}, nm, h('span', { class: 'st' }, ` step ${pres.step ?? '?'}, ${Array.isArray(pres.done) ? pres.done.length : 0} done`)),
+      pres.stuck ? h('span', { class: 'tag red' }, 'stuck') : (Array.isArray(pres.done) && pres.done.includes(S.step) ? h('span', { class: 'tag' }, '✓ this step') : h('span', {}))));
+  });
+}
+
+/* ===================== project download ===================== */
+let zipP = null;
+const loadZip = () => window.JSZip ? Promise.resolve(window.JSZip) : (zipP = zipP || new Promise((res, rej) => { const s = document.createElement('script'); s.src = JSZIP; s.onload = () => res(window.JSZip); s.onerror = () => { zipP = null; rej(new Error('offline')); }; document.head.append(s); }));
+async function downloadProject(fromStep, msg) {
+  const f = fromStep >= 0 && S.files[fromStep] ? S.files[fromStep] : FINAL;
+  msg.textContent = 'Preparing the zip…';
+  let JSZip;
+  try { JSZip = await loadZip(); } catch (e) { msg.textContent = 'Could not load the zip library. It needs an internet connection; check it and try again.'; return; }
+  let appSrc = f.app;
+  if (!/from\s+['"]react['"]/.test(appSrc) && /use(State|Effect)/.test(appSrc)) appSrc = "import { useState, useEffect } from 'react'\n" + appSrc;
+  appSrc = "import './App.css'\n" + appSrc;
+  const z = new JSZip();
+  z.file('README.md', README);
+  z.file('server/server.js', f.server);
+  z.file('server/models/Book.js', f.model);
+  z.file('server/package.json', JSON.stringify({ name: 'kitabswap-server', version: '1.0.0', main: 'server.js', scripts: { start: 'node server.js', dev: 'nodemon server.js' }, dependencies: { dotenv: '^16.4.5', express: '^5.1.0', mongoose: '^8.9.0' }, devDependencies: { nodemon: '^3.1.7' } }, null, 2));
+  z.file('server/.env.example', 'MONGODB_URI=mongodb+srv://USER:PASSWORD@YOUR-CLUSTER.mongodb.net/kitabswap\n');
+  z.file('server/.gitignore', 'node_modules\n.env\n');
+  z.file('client/package.json', JSON.stringify({ name: 'kitabswap-client', private: true, version: '0.0.0', type: 'module', scripts: { dev: 'vite', build: 'vite build', preview: 'vite preview' }, dependencies: { react: '^18.3.1', 'react-dom': '^18.3.1' }, devDependencies: { '@vitejs/plugin-react': '^4.3.4', vite: '^5.4.11' } }, null, 2));
+  z.file('client/vite.config.js', "import { defineConfig } from 'vite'\nimport react from '@vitejs/plugin-react'\n\n// Forward every /api request to the Express server on port 3000\nexport default defineConfig({\n  plugins: [react()],\n  server: { proxy: { '/api': 'http://localhost:3000' } }\n})\n");
+  z.file('client/index.html', '<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <title>KitabSwap</title>\n  </head>\n  <body>\n    <div id="root"></div>\n    <script type="module" src="/src/main.jsx"><\/script>\n  </body>\n</html>\n');
+  z.file('client/src/main.jsx', "import React from 'react'\nimport ReactDOM from 'react-dom/client'\nimport App from './App.jsx'\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n)\n");
+  z.file('client/src/App.jsx', appSrc);
+  z.file('client/src/App.css', APP_CSS);
+  z.file('client/.gitignore', 'node_modules\ndist\n');
+  const blob = await z.generateAsync({ type: 'blob' });
+  if (CAP.downloads) {
+    try { await CAP.downloads.save({ filename: 'kitabswap.zip', data: blob }); msg.textContent = 'Saved kitabswap.zip. Open README.md first.'; }
+    catch (e) { msg.textContent = e && e.code === 'declined' ? 'Download cancelled.' : 'The download did not go through. Try again.'; }
+    return;
+  }
+  const url = URL.createObjectURL(blob);
+  const a = h('a', { href: url, download: 'kitabswap.zip' }); document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  msg.textContent = 'Downloaded kitabswap.zip. Open README.md first.';
+}
+const README = `# KitabSwap: the MERN app from the Build Studio
+
+BINF 602 Electronic Business Development, German International University
+
+## What is in here
+
+    server/   Node.js + Express + Mongoose  (the E, N and M of MERN)
+    client/   React, served by Vite         (the R)
+
+## 1. The server (port 3000)
+
+    cd server
+    npm install
+    cp .env.example .env      # Windows: copy .env.example .env
+
+Open \`.env\` and paste your MongoDB Atlas connection string from Lab 4
+(Atlas: Connect > Drivers). Never commit .env: it holds your password.
+
+    npm run dev               # nodemon restarts the server when you save
+
+You should see "Connected to MongoDB". Test http://localhost:3000/api/books
+in your browser or Postman. Your Atlas database starts empty, so POST a few
+books first (Postman, or the form once the client runs).
+
+## 2. The client (port 5173), in a second terminal
+
+    cd client
+    npm install
+    npm run dev
+
+Open http://localhost:5173. vite.config.js forwards /api requests to
+port 3000, so fetch('/api/books') works exactly as in the studio.
+
+Note: in development, React's StrictMode runs effects twice on purpose
+(topic 6.5), so you may see two GET requests on load. That is normal.
+
+## 3. Ideas to extend it
+
+- DELETE /api/books/:id with Book.findByIdAndDelete, and a Delete button
+- A category filter in React that calls /api/books?category=...
+- A cart total in the Header
+`;
+
+/* ===================== start ===================== */
+showPanel('console');
+renderStepper(); renderGuide(); loadEditor(); run();
+/* GitHub edition: no claude.ai features */
+
+</script>
+</body>
+</html>
